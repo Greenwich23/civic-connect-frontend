@@ -10,6 +10,7 @@ export function useAdminApplications() {
       const { data } = await adminApplicationsApi.getPendingApplications();
       return data.applications;
     },
+    refetchInterval: 30000, // near-live polling, no WebSockets needed — also feeds the sidebar badge
   });
 }
 

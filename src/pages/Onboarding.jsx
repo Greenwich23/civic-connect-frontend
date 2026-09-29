@@ -39,7 +39,9 @@ export default function Onboarding({ onNavigate }) {
 
   const navigate = useNavigate();
   const { communities, loading, error: fetchError } = useCommunities();
-  const { joinCommunity } = useAuth();
+  const { joinCommunity, pendingApplication } = useAuth();
+
+  const hasPendingApplication = pendingApplication?.status === "pending";
 
   const filtered = communities.filter((community) => {
     const parentName = community.parent?.name || "";
@@ -128,6 +130,23 @@ export default function Onboarding({ onNavigate }) {
             </div>
           )}
 
+          {hasPendingApplication && (
+            <div className="mb-4 px-3.5 py-2.5 bg-amber-50 border border-amber-200 rounded-lg text-[13px] text-amber-800">
+              You have a pending{" "}
+              {pendingApplication.applicationType === "found_new_community"
+                ? "community creation"
+                : "representative"}{" "}
+              request. You can't join a community until it's approved or
+              rejected.{" "}
+              <button
+                onClick={() => navigate("/signup/community-request")}
+                className="font-600 hover:underline"
+              >
+                View status
+              </button>
+            </div>
+          )}
+
           {/* Search */}
           <div className="relative mb-4">
             <svg
@@ -169,7 +188,8 @@ export default function Onboarding({ onNavigate }) {
                 <button
                   key={community._id}
                   onClick={() => setSelected(community._id)}
-                  className={`w-full text-left flex items-center gap-3 p-3.5 rounded-xl border-2 transition-colors ${
+                  disabled={hasPendingApplication}
+                  className={`w-full text-left flex items-center gap-3 p-3.5 rounded-xl border-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                     selected === community._id
                       ? "border-[#0F766E] bg-[#0F766E]/5"
                       : "border-[#E2E8F0] hover:border-[#0F766E]/30"
@@ -233,7 +253,7 @@ export default function Onboarding({ onNavigate }) {
             </div>
 
             <button
-              onClick={() => navigate("/community-request")}
+              onClick={() => navigate("/signup/community-request")}
               className="text-[11px] text-[#0F766E] font-600 hover:underline shrink-0"
             >
               Create one
@@ -243,7 +263,7 @@ export default function Onboarding({ onNavigate }) {
           {/* Join button */}
           <button
             onClick={handleJoin}
-            disabled={!selected || joining}
+            disabled={!selected || joining || hasPendingApplication}
             className="w-full bg-[#0F766E] hover:bg-[#115E59] text-white font-600 text-[14px] py-3 rounded-lg transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {joining

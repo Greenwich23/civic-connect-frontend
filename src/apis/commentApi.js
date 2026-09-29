@@ -79,8 +79,31 @@ MODERATION
 */
 
 // Report a comment
-export const reportComment = async (commentId) => {
-  const { data } = await axiosClient.post(`/comments/${commentId}/report`);
+export const reportComment = async (commentId, { reason, details } = {}) => {
+  const { data } = await axiosClient.post(`/comments/${commentId}/report`, {
+    reason,
+    details,
+  });
+
+  return data;
+};
+
+/*
+=========================================================
+PINNING (representative announcements)
+=========================================================
+*/
+
+// Pin a comment
+export const pinComment = async (commentId) => {
+  const { data } = await axiosClient.post(`/comments/${commentId}/pin`);
+
+  return data;
+};
+
+// Unpin a comment
+export const unpinComment = async (commentId) => {
+  const { data } = await axiosClient.delete(`/comments/${commentId}/pin`);
 
   return data;
 };

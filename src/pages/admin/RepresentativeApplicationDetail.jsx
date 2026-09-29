@@ -61,6 +61,8 @@ export default function RepresentativeApplicationDetail() {
 
   const [reviewNote, setReviewNote] = useState("");
   const [actionError, setActionError] = useState("");
+  const [grantOfficialVerification, setGrantOfficialVerification] =
+    useState(false);
 
   const handleReview = async (decision) => {
     setActionError("");
@@ -75,6 +77,8 @@ export default function RepresentativeApplicationDetail() {
       await reviewMutation.mutateAsync({
         decision,
         reviewNote: reviewNote.trim() || undefined,
+        grantOfficialVerification:
+          decision === "approved" ? grantOfficialVerification : undefined,
       });
       navigate("/admin/representative-applications");
     } catch (err) {
@@ -222,6 +226,37 @@ export default function RepresentativeApplicationDetail() {
           </div>
         </div>
 
+        {/* Official status claim */}
+        {application.claimsOfficialStatus && (
+          <div className="bg-white rounded-2xl border border-amber-200 p-6 civic-shadow">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-display font-700 text-[#1E293B] text-[15px]">
+                Local Government / Council Claim
+              </h2>
+              <span className="text-[11px] font-700 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+                Claims Official Status
+              </span>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-5 mb-5">
+              <Field label="Official title">
+                {application.officialTitle}
+              </Field>
+            </div>
+
+            <DocumentImage
+              title="Proof of official position"
+              url={application.officialDocumentUrl}
+            />
+
+            <p className="text-[11px] text-[#94A3B8] mt-3">
+              Claiming this doesn't grant anything by itself — review the
+              document above and decide below whether to award the "Verified
+              Official" badge alongside approval.
+            </p>
+          </div>
+        )}
+
         {/* Decision */}
         {isPending ? (
           <div className="bg-white rounded-2xl border border-[#E2E8F0] p-6 civic-shadow">
@@ -248,6 +283,29 @@ export default function RepresentativeApplicationDetail() {
               placeholder="Shared with the applicant in their notification. Required if rejecting."
               className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[14px] text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] resize-none"
             />
+
+            {application.claimsOfficialStatus && (
+              <label className="flex items-start gap-2.5 mt-4 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={grantOfficialVerification}
+                  onChange={(e) =>
+                    setGrantOfficialVerification(e.target.checked)
+                  }
+                  className="mt-0.5 w-4 h-4 accent-[#0F766E] cursor-pointer"
+                />
+                <span>
+                  <span className="block text-[13px] font-600 text-[#1E293B]">
+                    Grant "Verified Official" badge on approval
+                  </span>
+                  <span className="block text-[11px] text-[#94A3B8] mt-0.5">
+                    Only check this once you've reviewed the document above
+                    and are confident it's genuine. It has no effect if you
+                    reject this application.
+                  </span>
+                </span>
+              </label>
+            )}
 
             <div className="flex gap-3 mt-4">
               <button

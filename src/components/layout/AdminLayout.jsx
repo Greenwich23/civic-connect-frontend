@@ -1,7 +1,14 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth.js";
+import { useAdminApplications } from "../../hooks/useAdminApplications.js";
+import {
+  useFlaggedComments,
+  useFlaggedMessages,
+} from "../../hooks/useAdminModeration.js";
+import { useRepresentativePerformance } from "../../hooks/useAdminRepresentativePerformance.js";
+import { useAdminReports } from "../../hooks/useAdminReports.js";
 
-function SidebarLink({ to, icon, label }) {
+function SidebarLink({ to, icon, label, badge }) {
   return (
     <NavLink
       to={to}
@@ -15,6 +22,11 @@ function SidebarLink({ to, icon, label }) {
     >
       <span className="w-5">{icon}</span>
       <span className="flex-1">{label}</span>
+      {badge > 0 && (
+        <span className="bg-[#DC2626] text-white text-[10px] font-700 min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+          {badge > 99 ? "99+" : badge}
+        </span>
+      )}
     </NavLink>
   );
 }
@@ -22,6 +34,20 @@ function SidebarLink({ to, icon, label }) {
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+
+  const { data: pendingApplications } = useAdminApplications();
+  const { data: flaggedComments } = useFlaggedComments({ page: 1, limit: 1 });
+  const { data: flaggedMessages } = useFlaggedMessages({ page: 1, limit: 1 });
+  const { data: performance } = useRepresentativePerformance();
+  const { data: pendingReports } = useAdminReports("pending");
+
+  const pendingApplicationsCount = pendingApplications?.length || 0;
+  const moderationCount =
+    (flaggedComments?.pagination?.total || 0) +
+    (flaggedMessages?.pagination?.total || 0);
+  const flaggedRepsCount =
+    performance?.filter((row) => row.flagged).length || 0;
+  const pendingReportsCount = pendingReports?.length || 0;
 
   const handleLogout = async () => {
     await logout();
@@ -35,6 +61,8 @@ export default function AdminLayout() {
       .join("")
       .toUpperCase()
       .slice(0, 2) || "A";
+
+  const isSuperAdmin = user?.role === "super_admin";
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC]">
@@ -59,8 +87,14 @@ export default function AdminLayout() {
           <span className="font-800 text-[#1E293B] text-[15px]">
             CivicPulse
           </span>
-          <span className="text-[10px] font-700 text-[#0F766E] bg-[#0F766E]/10 rounded px-1.5 py-0.5 uppercase tracking-wider">
-            Admin
+          <span
+            className={`text-[10px] font-700 rounded px-1.5 py-0.5 uppercase tracking-wider ${
+              isSuperAdmin
+                ? "text-amber-700 bg-amber-50"
+                : "text-[#0F766E] bg-[#0F766E]/10"
+            }`}
+          >
+            {isSuperAdmin ? "Super Admin" : "Admin"}
           </span>
         </button>
 
@@ -70,10 +104,32 @@ export default function AdminLayout() {
             to="/admin/representative-applications"
             icon="📝"
             label="Representative Applications"
+            badge={pendingApplicationsCount}
           />
           <SidebarLink to="/admin/users" icon="👥" label="User Management" />
-          <SidebarLink to="/admin/moderation" icon="🛡️" label="Moderation" />
+          <SidebarLink to="/admin/issues" icon="📌" label="Issues" />
+          <SidebarLink
+            to="/admin/moderation"
+            icon="🛡️"
+            label="Moderation"
+            badge={moderationCount}
+          />
           <SidebarLink to="/admin/communities" icon="🏘️" label="Communities" />
+          <SidebarLink
+            to="/admin/representative-performance"
+            icon="📈"
+            label="Rep Performance"
+            badge={flaggedRepsCount}
+          />
+          <SidebarLink
+            to="/admin/representative-reports"
+            icon="🚩"
+            label="Representative Reports"
+            badge={pendingReportsCount}
+          />
+          {isSuperAdmin && (
+            <SidebarLink to="/admin/admins" icon="🔑" label="Admins" />
+          )}
         </nav>
 
         <div className="pt-4 border-t border-[#E2E8F0] space-y-1">
@@ -95,7 +151,9 @@ export default function AdminLayout() {
               <div className="text-[13px] font-600 text-[#1E293B]">
                 {user?.name || "Admin"}
               </div>
-              <div className="text-[11px] text-[#64748B]">Administrator</div>
+              <div className="text-[11px] text-[#64748B]">
+                {isSuperAdmin ? "Super Admin" : "Administrator"}
+              </div>
             </div>
 
             <div className="w-9 h-9 rounded-full bg-[#0F766E]/10 text-[#0F766E] font-700 text-[13px] flex items-center justify-center">

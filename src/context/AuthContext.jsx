@@ -30,10 +30,22 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
+  // Doesn't log the user in — the account is unverified until verifyOtp
+  // succeeds, so no token exists yet.
   const register = async (formData) => {
     const { data } = await authApi.registerUser(formData);
+    return data;
+  };
+
+  const verifyOtp = async ({ email, otp }) => {
+    const { data } = await authApi.verifyOtp({ email, otp });
     localStorage.setItem("token", data.token);
     setUser(data.user);
+    return data;
+  };
+
+  const resendOtp = async (email) => {
+    const { data } = await authApi.sendOtp({ email });
     return data;
   };
 
@@ -85,6 +97,8 @@ export function AuthProvider({ children }) {
     loading,
     isAuthenticated: !!user,
     register,
+    verifyOtp,
+    resendOtp,
     login,
     logout,
     refreshUser,

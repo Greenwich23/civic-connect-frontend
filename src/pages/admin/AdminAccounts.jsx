@@ -1,53 +1,17 @@
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import {
-  useAdminUsers,
-  useDeactivateUser,
-  useReactivateUser,
-} from "../../hooks/useAdminUsers";
-
-const ROLE_FILTERS = [
-  { key: "", label: "All roles" },
-  { key: "citizen", label: "Citizen" },
-  { key: "representative", label: "Representative" },
-  // { key: "admin", label: "Admin" },
-];
+  useAdminAccounts,
+  useCreateAdmin,
+  useDeactivateAdmin,
+  useReactivateAdmin,
+} from "../../hooks/useAdminAccounts";
 
 const STATUS_FILTERS = [
   { key: "", label: "All statuses" },
   { key: "true", label: "Active" },
   { key: "false", label: "Deactivated" },
 ];
-
-const ROLE_BADGE_STYLES = {
-  citizen: "bg-blue-50 text-blue-700",
-  representative: "bg-purple-50 text-purple-700",
-  admin: "bg-[#0F766E]/10 text-[#0F766E]",
-};
-
-function RoleBadge({ role }) {
-  return (
-    <span
-      className={`text-[11px] font-600 px-2 py-0.5 rounded-full capitalize ${
-        ROLE_BADGE_STYLES[role] || "bg-[#F1F5F9] text-[#64748B]"
-      }`}
-    >
-      {role}
-    </span>
-  );
-}
-
-function StatusBadge({ isActive }) {
-  return (
-    <span
-      className={`text-[11px] font-600 px-2 py-0.5 rounded-full ${
-        isActive ? "bg-green-50 text-green-700" : "bg-red-50 text-[#DC2626]"
-      }`}
-    >
-      {isActive ? "Active" : "Deactivated"}
-    </span>
-  );
-}
 
 function FilterPill({ active, label, onClick }) {
   return (
@@ -64,40 +28,164 @@ function FilterPill({ active, label, onClick }) {
   );
 }
 
-function UserRowSkeleton() {
+function StatusBadge({ isActive }) {
+  return (
+    <span
+      className={`text-[11px] font-600 px-2 py-0.5 rounded-full ${
+        isActive ? "bg-green-50 text-green-700" : "bg-red-50 text-[#DC2626]"
+      }`}
+    >
+      {isActive ? "Active" : "Deactivated"}
+    </span>
+  );
+}
+
+function AdminRowSkeleton() {
   return (
     <tr className="border-b border-[#E2E8F0] last:border-0">
-      <td className="px-4 py-3.5" colSpan={6}>
+      <td className="px-4 py-3.5" colSpan={4}>
         <div className="h-4 w-full bg-[#E2E8F0] rounded animate-pulse" />
       </td>
     </tr>
   );
 }
 
-export default function UserManagement() {
+function CreateAdminForm({ onClose }) {
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [error, setError] = useState("");
+  const createMutation = useCreateAdmin();
+
+  const update = (field) => (e) =>
+    setForm((f) => ({ ...f, [field]: e.target.value }));
+
+  const handleSubmit = async () => {
+    setError("");
+
+    if (!form.name.trim() || !form.email.trim() || !form.password) {
+      setError("Name, email and password are all required.");
+      return;
+    }
+
+    if (form.password.length < 8) {
+      setError("Password must be at least 8 characters.");
+      return;
+    }
+
+    try {
+      await createMutation.mutateAsync({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        password: form.password,
+      });
+      onClose();
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Couldn't create this admin account. Please try again.",
+      );
+    }
+  };
+
+  return (
+    <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow p-5 mb-6">
+      <h2 className="font-display font-700 text-[#1E293B] text-[15px] mb-1">
+        Add an admin
+      </h2>
+      <p className="text-[12px] text-[#64748B] mb-4">
+        They'll log in with this email and password, just like any other
+        CivicPulse account — share the password with them directly, it isn't
+        shown again.
+      </p>
+
+      {error && (
+        <div className="flex items-start gap-3 p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+          <span className="text-lg shrink-0">⚠️</span>
+          <p className="text-[13px] text-[#DC2626] leading-relaxed">{error}</p>
+        </div>
+      )}
+
+      <div className="grid sm:grid-cols-3 gap-4 mb-4">
+        <div>
+          <label className="block text-[13px] font-600 text-[#1E293B] mb-1.5">
+            Name
+          </label>
+          <input
+            value={form.name}
+            onChange={update("name")}
+            placeholder="Full name"
+            className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[14px] text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-[13px] font-600 text-[#1E293B] mb-1.5">
+            Email
+          </label>
+          <input
+            type="email"
+            value={form.email}
+            onChange={update("email")}
+            placeholder="admin@example.com"
+            className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[14px] text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
+          />
+        </div>
+
+        <div>
+          <label className="block text-[13px] font-600 text-[#1E293B] mb-1.5">
+            Password
+          </label>
+          <input
+            type="text"
+            value={form.password}
+            onChange={update("password")}
+            placeholder="At least 8 characters"
+            className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[14px] text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] font-mono"
+          />
+        </div>
+      </div>
+
+      <div className="flex gap-3">
+        <button
+          onClick={handleSubmit}
+          disabled={createMutation.isPending}
+          className="bg-[#0F766E] hover:bg-[#115E59] text-white font-600 text-sm px-5 py-2.5 rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {createMutation.isPending ? "Creating..." : "Create admin"}
+        </button>
+        <button
+          onClick={onClose}
+          className="text-[#64748B] hover:text-[#1E293B] font-600 text-sm px-5 py-2.5 rounded-xl transition-colors"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminAccounts() {
   const { user: currentUser } = useAuth();
 
   const [search, setSearch] = useState("");
-  const [role, setRole] = useState("");
   const [isActive, setIsActive] = useState("");
   const [page, setPage] = useState(1);
+  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const filters = {
     search: search.trim() || undefined,
-    role: role || undefined,
     isActive: isActive || undefined,
     page,
     limit: 20,
   };
 
-  const { data, isLoading, isFetching, isError } = useAdminUsers(filters);
-  const deactivateMutation = useDeactivateUser();
-  const reactivateMutation = useReactivateUser();
+  const { data, isLoading, isFetching, isError } = useAdminAccounts(filters);
+  const deactivateMutation = useDeactivateAdmin();
+  const reactivateMutation = useReactivateAdmin();
 
   const [actionError, setActionError] = useState("");
-  const [pendingUserId, setPendingUserId] = useState(null);
+  const [pendingId, setPendingId] = useState(null);
 
-  const users = data?.users || [];
+  const admins = data?.admins || [];
   const pagination = data?.pagination;
 
   const updateFilter = (setter) => (value) => {
@@ -105,34 +193,45 @@ export default function UserManagement() {
     setPage(1);
   };
 
-  const handleToggleActive = async (targetUser) => {
+  const handleToggleActive = async (admin) => {
     setActionError("");
-    setPendingUserId(targetUser._id);
+    setPendingId(admin._id);
 
-    const mutation = targetUser.isActive
-      ? deactivateMutation
-      : reactivateMutation;
+    const mutation = admin.isActive ? deactivateMutation : reactivateMutation;
 
     try {
-      await mutation.mutateAsync(targetUser._id);
+      await mutation.mutateAsync(admin._id);
     } catch (err) {
       setActionError(
         err.response?.data?.message ||
-          `Couldn't ${targetUser.isActive ? "deactivate" : "reactivate"} this user. Please try again.`,
+          `Couldn't ${admin.isActive ? "deactivate" : "reactivate"} this admin. Please try again.`,
       );
     } finally {
-      setPendingUserId(null);
+      setPendingId(null);
     }
   };
 
   return (
     <div>
-      <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
-        User Management
-      </h1>
+      <div className="flex items-start justify-between gap-4 mb-1">
+        <h1 className="font-display font-800 text-[#1E293B] text-3xl">
+          Admins
+        </h1>
+        <button
+          onClick={() => setShowCreateForm((v) => !v)}
+          className="shrink-0 bg-[#0F766E] hover:bg-[#115E59] text-white font-600 text-[13px] px-4 py-2 rounded-lg transition-colors"
+        >
+          {showCreateForm ? "Close" : "+ Add Admin"}
+        </button>
+      </div>
       <p className="text-[13px] text-[#64748B] mb-6">
-        {pagination?.total ?? 0} users on CivicPulse.
+        {pagination?.total ?? 0} admin accounts. Only you, as super admin, can
+        see or manage this list.
       </p>
+
+      {showCreateForm && (
+        <CreateAdminForm onClose={() => setShowCreateForm(false)} />
+      )}
 
       <div className="relative mb-4 max-w-sm">
         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]">
@@ -140,27 +239,13 @@ export default function UserManagement() {
         </span>
         <input
           value={search}
-          onChange={(e) => {
-            setSearch(e.target.value);
-            setPage(1);
-          }}
+          onChange={(e) => updateFilter(setSearch)(e.target.value)}
           placeholder="Search by name or email..."
           className="w-full pl-9 pr-4 py-2.5 bg-white border border-[#E2E8F0] rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
         />
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-4">
-        {ROLE_FILTERS.map((f) => (
-          <FilterPill
-            key={f.key || "all-roles"}
-            label={f.label}
-            active={role === f.key}
-            onClick={() => updateFilter(setRole)(f.key)}
-          />
-        ))}
-
-        <span className="w-px h-4 bg-[#E2E8F0] mx-1" />
-
         {STATUS_FILTERS.map((f) => (
           <FilterPill
             key={f.key || "all-statuses"}
@@ -184,7 +269,7 @@ export default function UserManagement() {
         <div className="flex items-start gap-3 p-4 bg-red-50 border border-red-200 rounded-xl mb-4">
           <span className="text-lg shrink-0">⚠️</span>
           <p className="text-[13px] text-[#DC2626] leading-relaxed">
-            Couldn't load users. Please refresh and try again.
+            Couldn't load admins. Please refresh and try again.
           </p>
         </div>
       )}
@@ -194,16 +279,13 @@ export default function UserManagement() {
           <thead>
             <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
               <th className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">
-                User
-              </th>
-              <th className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">
-                Role
-              </th>
-              <th className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">
-                Community
+                Admin
               </th>
               <th className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">
                 Status
+              </th>
+              <th className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">
+                Added
               </th>
               <th className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider text-right">
                 Action
@@ -212,28 +294,28 @@ export default function UserManagement() {
           </thead>
           <tbody>
             {isLoading &&
-              Array.from({ length: 8 }).map((_, i) => (
-                <UserRowSkeleton key={i} />
+              Array.from({ length: 5 }).map((_, i) => (
+                <AdminRowSkeleton key={i} />
               ))}
 
             {!isLoading &&
-              users.map((rowUser) => {
-                const isSelf = rowUser._id === currentUser?._id;
-                const isPending = pendingUserId === rowUser._id;
+              admins.map((admin) => {
+                const isSelf = admin._id === currentUser?._id;
+                const isPending = pendingId === admin._id;
 
                 return (
                   <tr
-                    key={rowUser._id}
+                    key={admin._id}
                     className="border-b border-[#E2E8F0] last:border-0 hover:bg-[#F8FAFC]/60"
                   >
                     <td className="px-4 py-3.5">
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-full bg-[#0F766E]/10 text-[#0F766E] font-700 text-[12px] flex items-center justify-center shrink-0">
-                          {rowUser.name?.[0]?.toUpperCase() || "?"}
+                          {admin.name?.[0]?.toUpperCase() || "?"}
                         </div>
                         <div className="min-w-0">
                           <div className="text-[13px] font-600 text-[#1E293B] truncate">
-                            {rowUser.name}
+                            {admin.name}
                             {isSelf && (
                               <span className="text-[#94A3B8] font-500">
                                 {" "}
@@ -242,40 +324,35 @@ export default function UserManagement() {
                             )}
                           </div>
                           <div className="text-[12px] text-[#64748B] truncate">
-                            {rowUser.email}
+                            {admin.email}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-4 py-3.5">
-                      <RoleBadge role={rowUser.role} />
+                      <StatusBadge isActive={admin.isActive} />
                     </td>
-                    <td className="px-4 py-3.5 text-[13px] text-[#1E293B]">
-                      {rowUser.community?.name || (
-                        <span className="text-[#94A3B8]">—</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3.5">
-                      <StatusBadge isActive={rowUser.isActive} />
+                    <td className="px-4 py-3.5 text-[13px] text-[#64748B]">
+                      {new Date(admin.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-4 py-3.5 text-right">
                       <button
-                        onClick={() => handleToggleActive(rowUser)}
+                        onClick={() => handleToggleActive(admin)}
                         disabled={isSelf || isPending}
                         title={
                           isSelf
-                            ? "You cannot deactivate your own account"
+                            ? "You can't deactivate your own account"
                             : undefined
                         }
                         className={`text-[12px] font-600 px-3 py-1.5 rounded-lg border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
-                          rowUser.isActive
+                          admin.isActive
                             ? "border-[#DC2626] text-[#DC2626] hover:bg-red-50"
                             : "border-[#0F766E] text-[#0F766E] hover:bg-[#0F766E]/5"
                         }`}
                       >
                         {isPending
                           ? "Saving..."
-                          : rowUser.isActive
+                          : admin.isActive
                             ? "Deactivate"
                             : "Reactivate"}
                       </button>
@@ -286,14 +363,14 @@ export default function UserManagement() {
           </tbody>
         </table>
 
-        {!isLoading && users.length === 0 && (
+        {!isLoading && admins.length === 0 && (
           <div className="p-10 text-center">
-            <div className="text-3xl mb-2">🔍</div>
+            <div className="text-3xl mb-2">🔑</div>
             <p className="text-[14px] font-600 text-[#1E293B] mb-1">
-              No users match these filters
+              No admins match these filters
             </p>
             <p className="text-[13px] text-[#64748B]">
-              Try a different search term, role, or status filter.
+              Try a different search term or status filter.
             </p>
           </div>
         )}

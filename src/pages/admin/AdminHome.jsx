@@ -3,6 +3,8 @@ import { useAuth } from "../../hooks/useAuth";
 import { useAdminOverview } from "../../hooks/useAdminStats";
 import { useAdminApplications } from "../../hooks/useAdminApplications";
 import { useFlaggedComments } from "../../hooks/useAdminModeration";
+import { useAdminCommunities } from "../../hooks/useAdminCommunities";
+import { useAdminIssues } from "../../hooks/useAdminIssues";
 import { APPLICATION_TYPE_LABELS } from "../../utils/constants";
 
 function StatCard({ value, label, color }) {
@@ -12,6 +14,7 @@ function StatCard({ value, label, color }) {
     blue: "bg-blue-50 text-blue-700",
     green: "bg-green-50 text-green-700",
     purple: "bg-purple-50 text-purple-700",
+    teal: "bg-[#0F766E]/10 text-[#0F766E]",
   };
 
   return (
@@ -61,6 +64,22 @@ function PreviewRowSkeleton() {
   );
 }
 
+const ISSUE_STATUS_BADGE_STYLES = {
+  reported: "bg-blue-50 text-blue-700",
+  under_review: "bg-amber-50 text-amber-700",
+  action_planned: "bg-purple-50 text-purple-700",
+  in_progress: "bg-orange-50 text-orange-700",
+  resolved: "bg-green-50 text-green-700",
+};
+
+const ISSUE_STATUS_LABELS = {
+  reported: "Reported",
+  under_review: "Under Review",
+  action_planned: "Action Planned",
+  in_progress: "In Progress",
+  resolved: "Resolved",
+};
+
 function PreviewEmpty({ icon, message }) {
   return (
     <div className="p-8 text-center">
@@ -84,6 +103,14 @@ export default function AdminHome() {
     { limit: 4 },
   );
 
+  // level: "community" only — the city-level anchors (Abuja, Lagos, etc.)
+  // aren't communities themselves, so they're excluded from both the count
+  // and the "recent" list below.
+  const { data: communities, isLoading: communitiesLoading } =
+    useAdminCommunities({ level: "community" });
+
+  const statsLoading = overviewLoading || communitiesLoading;
+
   const stats = overview
     ? [
         { value: overview.totalIssues, label: "Total Issues", color: "slate" },
@@ -103,11 +130,26 @@ export default function AdminHome() {
           label: "Pending Applications",
           color: "amber",
         },
+        {
+          value: communities?.length ?? 0,
+          label: "Total Communities",
+          color: "teal",
+        },
       ]
     : [];
 
   const pendingPreview = applications?.slice(0, 4) || [];
   const flaggedPreview = flaggedData?.comments?.slice(0, 4) || [];
+
+  const recentCommunities = communities
+    ? [...communities]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 4)
+    : [];
+
+  const { data: recentIssuesData, isLoading: recentIssuesLoading } =
+    useAdminIssues({ limit: 4, page: 1 });
+  const recentIssues = recentIssuesData?.issues || [];
 
   return (
     <div>
@@ -127,9 +169,9 @@ export default function AdminHome() {
       )}
 
       {/* STATS */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-        {overviewLoading
-          ? Array.from({ length: 5 }).map((_, index) => (
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        {statsLoading
+          ? Array.from({ length: 6 }).map((_, index) => (
               <StatCardSkeleton key={index} />
             ))
           : stats.map((stat) => <StatCard key={stat.label} {...stat} />)}
@@ -221,6 +263,105 @@ export default function AdminHome() {
                   {comment.issue?.title && ` · on ${comment.issue.title}`}
                 </div>
               </button>
+            ))}
+        </PreviewSection>
+
+        <PreviewSection
+          title="Recent Communities"
+          icon="🏘️"
+          viewAllTo="/admin/communities"
+        >
+          {communitiesLoading && (
+            <>
+              <PreviewRowSkeleton />
+              <PreviewRowSkeleton />
+              <PreviewRowSkeleton />
+            </>
+          )}
+
+          {!communitiesLoading && recentCommunities.length === 0 && (
+            <PreviewEmpty
+              icon="🏘️"
+              message="No communities have been created yet."
+            />
+          )}
+
+          {!communitiesLoading &&
+            recentCommunities.map((community) => (
+              <Link
+                key={community._id}
+                to={`/admin/communities/${community._id}`}
+                className="block p-4 hover:bg-[#F8FAFC] transition-colors"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-600 text-[#1E293B] truncate">
+                      {community.name}
+                      {community.parent?.name && `, ${community.parent.name}`}
+                    </div>
+                    <div className="text-[12px] text-[#64748B] truncate">
+                      {community.memberCount ?? 0} members ·{" "}
+                      {community.issueCount ?? 0} issues
+                    </div>
+                  </div>
+                  <span
+                    className={`shrink-0 text-[11px] font-600 px-2 py-0.5 rounded-full ${
+                      community.status === "active"
+                        ? "bg-green-50 text-green-700"
+                        : "bg-amber-50 text-amber-700"
+                    }`}
+                  >
+                    {community.status === "active"
+                      ? "Represented"
+                      : "Unrepresented"}
+                  </span>
+                </div>
+              </Link>
+            ))}
+        </PreviewSection>
+
+        <PreviewSection
+          title="Recently Reported Issues"
+          icon="📌"
+          viewAllTo="/admin/issues"
+        >
+          {recentIssuesLoading && (
+            <>
+              <PreviewRowSkeleton />
+              <PreviewRowSkeleton />
+              <PreviewRowSkeleton />
+            </>
+          )}
+
+          {!recentIssuesLoading && recentIssues.length === 0 && (
+            <PreviewEmpty icon="📌" message="No issues reported yet." />
+          )}
+
+          {!recentIssuesLoading &&
+            recentIssues.map((issue) => (
+              <Link
+                key={issue._id}
+                to={`/admin/issues/${issue._id}`}
+                className="block p-4 hover:bg-[#F8FAFC] transition-colors"
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="text-[13px] font-600 text-[#1E293B] truncate">
+                      {issue.title}
+                    </div>
+                    <div className="text-[12px] text-[#64748B] truncate">
+                      {issue.community?.name || "Unknown community"}
+                      {issue.community?.parent?.name &&
+                        `, ${issue.community.parent.name}`}
+                    </div>
+                  </div>
+                  <span
+                    className={`shrink-0 text-[11px] font-600 px-2 py-0.5 rounded-full ${ISSUE_STATUS_BADGE_STYLES[issue.status]}`}
+                  >
+                    {ISSUE_STATUS_LABELS[issue.status]}
+                  </span>
+                </div>
+              </Link>
             ))}
         </PreviewSection>
       </div>

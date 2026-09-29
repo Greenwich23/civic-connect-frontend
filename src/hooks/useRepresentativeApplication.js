@@ -10,6 +10,22 @@ export function useApplyForRepresentative() {
     mutationFn: (formData) => api.applyForRepresentative(formData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      queryClient.invalidateQueries({
+        queryKey: ["representative-application", "mine"],
+      });
+    },
+  });
+}
+
+// The logged-in user's most recent application, whatever its status —
+// used by CreateCommunityRequest.jsx to show a status view instead of the
+// form once a request has already been submitted.
+export function useMyApplication() {
+  return useQuery({
+    queryKey: ["representative-application", "mine"],
+    queryFn: async () => {
+      const { data } = await api.getMyApplication();
+      return data.application;
     },
   });
 }

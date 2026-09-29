@@ -1,8 +1,18 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth.js";
 import { useNotifications } from "../../hooks/useNotifications.js";
+import { useMyConversations } from "../../hooks/useMessages.js";
 
-function SidebarLink({ to, icon, label, badge }) {
+function SidebarLink({ to, icon, label, badge, disabled }) {
+  if (disabled) {
+    return (
+      <span className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[14px] text-[#CBD5E1] cursor-not-allowed">
+        <span className="w-5">{icon}</span>
+        <span className="flex-1">{label}</span>
+      </span>
+    );
+  }
+
   return (
     <NavLink
       to={to}
@@ -26,11 +36,22 @@ function SidebarLink({ to, icon, label, badge }) {
 }
 
 export default function AppLayout() {
-  const { user, logout } = useAuth();
+  const { user, logout, pendingApplication } = useAuth();
   const navigate = useNavigate();
   const { data: notificationsData } = useNotifications();
+  const { data: conversations } = useMyConversations();
 
   const unreadCount = notificationsData?.unreadCount || 0;
+  const unreadMessageCount =
+    conversations?.reduce((sum, c) => sum + (c.unreadCount || 0), 0) || 0;
+
+  // `user.community` is null when nothing's joined yet — `typeof null` is
+  // "object" in JS, so a typeof check here would wrongly read "no
+  // community" as "has one". This reads correctly whether community is
+  // null, an unpopulated id string, or a populated object.
+  const communityId = user?.community?._id || user?.community;
+
+  const hasPendingApplication = pendingApplication?.status === "pending";
 
   const handleLogout = async () => {
     await logout();
@@ -64,11 +85,24 @@ export default function AppLayout() {
 
         <div className="flex items-center justify-between mb-6 px-1">
           <span className="text-[13px] text-[#1E293B] font-500 flex items-center gap-1">
-            📍 {user?.community?.name || "No community"}, Abuja
+            📍{" "}
+            {user?.community?.name
+              ? `${user.community.name}${
+                  user.community.parent?.name
+                    ? `, ${user.community.parent.name}`
+                    : ""
+                }`
+              : "No community"}
           </span>
           <button
             onClick={() => navigate("/communities")}
-            className="text-[12px] text-[#0F766E] font-600 hover:underline"
+            disabled={hasPendingApplication}
+            title={
+              hasPendingApplication
+                ? "You have a pending application — resolve it before changing communities"
+                : undefined
+            }
+            className="text-[12px] text-[#0F766E] font-600 hover:underline disabled:text-[#94A3B8] disabled:no-underline disabled:cursor-not-allowed"
           >
             Change
           </button>
@@ -77,9 +111,18 @@ export default function AppLayout() {
         <nav className="space-y-1 flex-1">
           <SidebarLink to="/citizen-home" icon="🏠" label="Home" />
           <SidebarLink to="/issues" icon="⏱️" label="Issues" />
+
+          <SidebarLink
+            to={communityId ? `/communities/${communityId}` : "#"}
+            icon="📢"
+            label="My Community"
+            disabled={!communityId}
+          />
+
           <SidebarLink to="/discussions" icon="💬" label="Discussions" />
           <SidebarLink to="/proposals" icon="✅" label="Proposals" />
           <SidebarLink to="/saved-issues" icon="📑" label="Saved Issues" />
+
           {user?.role === "representative" && (
             <SidebarLink to="/my-queue" icon="📋" label="My Queue" />
           )}
@@ -92,6 +135,12 @@ export default function AppLayout() {
             icon="🔔"
             label="Notifications"
             badge={unreadCount}
+          />
+          <SidebarLink
+            to="/messages"
+            icon="✉️"
+            label="Messages"
+            badge={unreadMessageCount}
           />
         </nav>
 
@@ -110,7 +159,7 @@ export default function AppLayout() {
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0">
         <header className="flex items-center justify-between gap-4 px-6 py-4 border-b border-[#E2E8F0] bg-white">
-          <div className="relative flex-1 max-w-md">
+          {/* <div className="relative flex-1 max-w-md">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]">
               🔍
             </span>
@@ -118,7 +167,7 @@ export default function AppLayout() {
               placeholder="Search community issues..."
               className="w-full pl-9 pr-4 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-[13px] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
             />
-          </div>
+          </div> */}
 
           <div className="flex items-center gap-3 shrink-0">
             <button

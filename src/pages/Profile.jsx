@@ -14,10 +14,14 @@ export default function Profile() {
 
   const firstName = user?.name?.split(" ")[0] || "User";
 
-  const communityName =
-    typeof user?.community === "object" ? user.community?.name : "No community";
-
-  const city = typeof user?.community === "object" ? user.community?.city : "";
+  // `user.community` is null when the user hasn't joined one — note that
+  // `typeof null === "object"` in JS, so checking `typeof` here would
+  // incorrectly treat "no community" as "has one". Reading straight off
+  // optional chaining is safe for null, an unpopulated id string, or a
+  // populated object alike.
+  const hasCommunity = !!user?.community?.name;
+  const communityName = user?.community?.name || "No community";
+  const city = user?.community?.parent?.name || "";
 
   const issuesReported = myIssues.length;
 
@@ -113,7 +117,7 @@ export default function Profile() {
 
           <ImpactStat
             label="Community"
-            value={communityName !== "No community" ? "Joined" : "None"}
+            value={hasCommunity ? "Joined" : "None"}
             icon="🏘️"
           />
         </div>

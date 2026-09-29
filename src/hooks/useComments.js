@@ -152,7 +152,42 @@ export function useReportComment(issueId) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (commentId) => commentApi.reportComment(commentId),
+    mutationFn: ({ commentId, reason, details }) =>
+      commentApi.reportComment(commentId, { reason, details }),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["issue", issueId, "comments"],
+      });
+    },
+  });
+}
+
+/*
+=========================================================
+PIN / UNPIN COMMENT
+=========================================================
+*/
+
+export function usePinComment(issueId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (commentId) => commentApi.pinComment(commentId),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["issue", issueId, "comments"],
+      });
+    },
+  });
+}
+
+export function useUnpinComment(issueId) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (commentId) => commentApi.unpinComment(commentId),
 
     onSuccess: () => {
       queryClient.invalidateQueries({

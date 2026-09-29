@@ -11,13 +11,18 @@ export default function ChangeCommunity() {
   const [success, setSuccess] = useState(false);
 
   const navigate = useNavigate();
-  const { user, joinCommunity } = useAuth();
+  const { user, joinCommunity, pendingApplication } = useAuth();
   const { communities, loading, error: fetchError } = useCommunities();
 
-  const currentCommunityId =
-    typeof user?.community === "object" ? user.community?._id : user?.community;
+  // `typeof null === "object"` in JS, so a typeof check here would wrongly
+  // treat "no community" as "has one" — this reads correctly whether
+  // community is null, an unpopulated id string, or a populated object.
+  const currentCommunityId = user?.community?._id || user?.community;
+
+  const hasPendingApplication = pendingApplication?.status === "pending";
 
   const currentCommunityName = user?.community?.name || null;
+  const currentCityName = user?.community?.parent?.name || null;
 
   const filtered = communities.filter((community) => {
     const parentName = community.parent?.name || "";
@@ -106,7 +111,8 @@ export default function ChangeCommunity() {
               Current community
             </div>
             <div className="font-600 text-[#1E293B] text-[15px] mt-0.5">
-              {currentCommunityName}, Abuja
+              {currentCommunityName}
+              {currentCityName ? `, ${currentCityName}` : ""}
             </div>
           </div>
         </div>
@@ -134,7 +140,25 @@ export default function ChangeCommunity() {
         </div>
       )}
 
-      {/* Picker card */}
+      {hasPendingApplication ? (
+        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-8 text-center">
+          <div className="text-3xl mb-2">⏳</div>
+          <h2 className="font-600 text-[#1E293B] text-[15px] mb-1">
+            You have a pending application
+          </h2>
+          <p className="text-[13px] text-[#64748B] max-w-sm mx-auto">
+            {pendingApplication.applicationType === "found_new_community"
+              ? "You've applied to create a new community. You can't join a different one until an admin approves or rejects that request."
+              : "You've applied to represent a community. You can't join a different one until an admin approves or rejects that request."}
+          </p>
+          <button
+            onClick={() => navigate("/signup/community-request")}
+            className="mt-4 text-[13px] font-600 text-[#0F766E] hover:underline"
+          >
+            View application status →
+          </button>
+        </div>
+      ) : (
       <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5">
         <h2 className="font-600 text-[#1E293B] text-[15px] mb-4">
           Choose a new community
@@ -285,6 +309,7 @@ export default function ChangeCommunity() {
           </button>
         </div>
       </div>
+      )}
     </div>
   );
 }

@@ -60,7 +60,12 @@ export default function IssueCard({ issue, onClick }) {
         </p>
 
         <div className="flex items-center justify-between text-[12px] text-[#64748B]">
-          <span>📍 {issue.community?.name}</span>
+          <span>
+            📍 {issue.community?.name}
+            {issue.community?.parent?.name
+              ? `, ${issue.community.parent.name}`
+              : ""}
+          </span>
           <span className="flex items-center gap-3">
             <span>▲ {issue.supportCount ?? 0}</span>
             <span>💬 {issue.commentCount ?? 0}</span>

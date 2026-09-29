@@ -14,6 +14,7 @@ const TYPE_ICONS = {
   issue_resolved: { icon: "✅", bg: "bg-green-50" },
   application_approved: { icon: "🎉", bg: "bg-green-50" },
   application_rejected: { icon: "⚠️", bg: "bg-red-50" },
+  new_message: { icon: "✉️", bg: "bg-blue-50" },
 };
 
 function timeAgo(dateString) {
@@ -101,6 +102,8 @@ export default function Notifications() {
   const handleNotificationClick = (notification) => {
     if (notification.relatedIssue?._id) {
       navigate(`/issues/${notification.relatedIssue._id}`);
+    } else if (notification.relatedConversation) {
+      navigate(`/messages/${notification.relatedConversation}`);
     }
   };
 
@@ -114,7 +117,7 @@ export default function Notifications() {
   };
 
   return (
-    <div className="max-w-2xl">
+    <div className="max-w-2xl mx-auto">
       <div className="flex items-start justify-between mb-6">
         <div>
           <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">

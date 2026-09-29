@@ -16,13 +16,6 @@ const CATEGORIES = [
   { key: "public", label: "Public", icon: "🏛️" },
 ];
 
-const SCOPES = [
-  { key: "mine", label: "My Community" },
-  { key: "nearby", label: "Nearby" },
-  { key: "city", label: "Abuja City" },
-  { key: "all", label: "All Nigeria" },
-];
-
 export default function Issues() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -33,17 +26,40 @@ export default function Issues() {
   const [sort, setSort] = useState("trending");
   const [scope, setScope] = useState("mine");
 
+  const communityId = user?.community?._id || user?.community;
+  const hasCommunity = !!communityId;
+  const cityId = user?.community?.parent?._id || user?.community?.parent;
+  const cityName = user?.community?.parent?.name;
+
+  // "nearby" and "city" currently resolve to the same thing server-side —
+  // every community under the same city — since there's no location data
+  // yet to genuinely rank issues by distance. See issue.controller.js.
+  const SCOPES = [
+    { key: "mine", label: "My Community" },
+    { key: "nearby", label: "Nearby" },
+    { key: "city", label: cityName ? `${cityName} City` : "My City" },
+    { key: "all", label: "All Nigeria" },
+  ];
+
   const filters = {
     search: search || undefined,
     category: category !== "all" ? category : undefined,
     status: status || undefined,
     sort,
-    community:
-      scope === "mine" ? user?.community?._id || user?.community : undefined,
+    community: scope === "mine" ? communityId : undefined,
+    city: scope === "nearby" || scope === "city" ? cityId : undefined,
     scope: scope !== "mine" ? scope : undefined,
   };
 
-  const { data: issues, isLoading, isFetching } = useIssues(filters);
+  // "My Community" with no community to scope to must NOT fall through to
+  // an unfiltered request — the backend only filters on `community` when
+  // it's actually present, so an empty value here would otherwise silently
+  // return every issue on the platform instead of none.
+  const showJoinPrompt = scope === "mine" && !hasCommunity;
+
+  const { data: issues, isLoading, isFetching } = useIssues(filters, {
+    enabled: !showJoinPrompt,
+  });
 
   const communityName = user?.community?.name || "your area";
   const issueCount = issues?.length ?? 0;
@@ -57,11 +73,12 @@ export default function Issues() {
             Community Issues
           </h1>
           <p className="text-[13px] text-[#64748B]">
-            📍 {communityName}, Abuja · {issueCount} issues found
+            📍 {communityName}
+            {cityName ? `, ${cityName}` : ""} · {issueCount} issues found
           </p>
         </div>
 
-        {scope === "mine" && (
+        {scope === "mine" && hasCommunity && (
           <button
             onClick={() => navigate("/report-issue")}
             className="flex items-center gap-1.5 bg-[#0F766E] hover:bg-[#115E59] text-white text-[13px] font-600 px-4 py-2.5 rounded-lg transition-colors shrink-0"
@@ -148,41 +165,62 @@ export default function Issues() {
         ))}
       </div>
 
-      {/* Issue grid */}
-      <div className="grid md:grid-cols-3 gap-4">
-        {isLoading &&
-          Array.from({ length: 6 }).map((_, i) => (
-            <IssueCardSkeleton key={i} />
-          ))}
-
-        {!isLoading &&
-          issues?.map((issue) => (
-            <IssueCard
-              key={issue._id}
-              issue={issue}
-              onClick={() => navigate(`/issues/${issue._id}`)}
-            />
-          ))}
-      </div>
-
-      {!isLoading && issues?.length === 0 && (
-        <div className="text-center py-16">
-          <p className="text-[#94A3B8] text-[14px] mb-3">
-            No issues found matching your filters.
+      {showJoinPrompt ? (
+        <div className="text-center py-16 bg-white border border-dashed border-[#E2E8F0] rounded-2xl">
+          <div className="text-3xl mb-2">🏘️</div>
+          <p className="text-[#1E293B] font-600 text-[14px] mb-1">
+            You haven't joined a community yet
+          </p>
+          <p className="text-[#94A3B8] text-[13px] mb-4">
+            Join one to see issues reported there, or check "All Nigeria" to
+            browse everywhere in the meantime.
           </p>
           <button
-            onClick={() => navigate("/report-issue")}
+            onClick={() => navigate("/signup/onboarding")}
             className="text-[#0F766E] font-600 text-[13px] hover:underline"
           >
-            Report an Issue
+            Join a Community
           </button>
         </div>
-      )}
+      ) : (
+        <>
+          {/* Issue grid */}
+          <div className="grid md:grid-cols-3 gap-4">
+            {isLoading &&
+              Array.from({ length: 6 }).map((_, i) => (
+                <IssueCardSkeleton key={i} />
+              ))}
 
-      {isFetching && !isLoading && (
-        <div className="text-center text-[12px] text-[#94A3B8] mt-4">
-          Updating results...
-        </div>
+            {!isLoading &&
+              issues?.map((issue) => (
+                <IssueCard
+                  key={issue._id}
+                  issue={issue}
+                  onClick={() => navigate(`/issues/${issue._id}`)}
+                />
+              ))}
+          </div>
+
+          {!isLoading && issues?.length === 0 && (
+            <div className="text-center py-16">
+              <p className="text-[#94A3B8] text-[14px] mb-3">
+                No issues found matching your filters.
+              </p>
+              <button
+                onClick={() => navigate("/report-issue")}
+                className="text-[#0F766E] font-600 text-[13px] hover:underline"
+              >
+                Report an Issue
+              </button>
+            </div>
+          )}
+
+          {isFetching && !isLoading && (
+            <div className="text-center text-[12px] text-[#94A3B8] mt-4">
+              Updating results...
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import * as issueApi from "../apis/issuesApi.js";
 
 // ── List page (Issues.jsx) ──────────────────────────────
 
-export function useIssues(filters = {}) {
+export function useIssues(filters = {}, options = {}) {
   return useQuery({
     queryKey: ["issues", filters],
     queryFn: async () => {
@@ -11,6 +11,7 @@ export function useIssues(filters = {}) {
       return data.issues;
     },
     keepPreviousData: true,
+    ...options,
   });
 }
 
@@ -93,7 +94,7 @@ export function useCreateIssue() {
   });
 }
 
-export function useTrendingIssues(communityId) {
+export function useTrendingIssues(communityId, options = {}) {
   return useQuery({
     queryKey: ["issues", "trending", communityId],
 
@@ -104,6 +105,7 @@ export function useTrendingIssues(communityId) {
     },
 
     enabled: !!communityId,
+    ...options,
   });
 }
 

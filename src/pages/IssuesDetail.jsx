@@ -14,6 +14,8 @@ import {
   useUpdateComment,
   useDeleteComment,
   useReportComment,
+  usePinComment,
+  useUnpinComment,
 } from "../hooks/useComments.js";
 import {
   useSaveIssue,
@@ -23,6 +25,7 @@ import {
 } from "../hooks/useSavedIssues.js";
 import { useAuth } from "../hooks/useAuth.js";
 import { useUpdateIssueStatus } from "../hooks/useIssues.js";
+import ResolutionFeedback from "../components/issue/ResolutionFeedback.jsx";
 
 const STATUS_STEPS = [
   { key: "reported", label: "Reported" },
@@ -88,10 +91,181 @@ function ProgressTimeline({ currentStatus }) {
 }
 
 /* =========================================================
+   CONFIRM / REPORT MODALS
+========================================================= */
+
+function ConfirmModal({
+  title,
+  message,
+  confirmLabel = "Confirm",
+  isLoading,
+  error,
+  onConfirm,
+  onCancel,
+}) {
+  return (
+    <div
+      className="fixed inset-0 bg-[#0F172A]/40 flex items-center justify-center z-50 p-4"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow max-w-sm w-full p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="font-display font-800 text-[#1E293B] text-[16px] mb-2">
+          {title}
+        </h3>
+        <p className="text-[13px] text-[#64748B] leading-relaxed mb-5">
+          {message}
+        </p>
+
+        {error && (
+          <div className="flex items-start gap-2.5 p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+            <span className="text-base shrink-0">⚠️</span>
+            <p className="text-[12px] text-[#DC2626] leading-relaxed">
+              {error}
+            </p>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-2">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-4 py-2 rounded-lg text-[13px] font-600 text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={isLoading}
+            className="px-4 py-2 rounded-lg text-[13px] font-600 bg-[#DC2626] hover:bg-red-700 text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "Deleting..." : confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const REPORT_REASONS = [
+  { value: "spam", label: "Spam or advertising" },
+  { value: "harassment", label: "Harassment or bullying" },
+  { value: "misinformation", label: "False information" },
+  { value: "off_topic", label: "Off-topic or irrelevant" },
+  { value: "other", label: "Something else" },
+];
+
+function ReportCommentModal({ isLoading, error, onSubmit, onCancel }) {
+  const [reason, setReason] = useState("");
+  const [details, setDetails] = useState("");
+  const [validationError, setValidationError] = useState("");
+
+  const handleSubmit = () => {
+    if (!reason) {
+      setValidationError("Choose a reason for reporting this comment.");
+      return;
+    }
+
+    if (reason === "other" && !details.trim()) {
+      setValidationError("Add a few details so we know what's wrong.");
+      return;
+    }
+
+    setValidationError("");
+    onSubmit({ reason, details: details.trim() || undefined });
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-[#0F172A]/40 flex items-center justify-center z-50 p-4"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow max-w-sm w-full p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="font-display font-800 text-[#1E293B] text-[16px] mb-1">
+          Report comment
+        </h3>
+        <p className="text-[13px] text-[#64748B] leading-relaxed mb-4">
+          Let us know why this comment doesn't belong here.
+        </p>
+
+        {(validationError || error) && (
+          <div className="flex items-start gap-2.5 p-3 bg-red-50 border border-red-200 rounded-lg mb-4">
+            <span className="text-base shrink-0">⚠️</span>
+            <p className="text-[12px] text-[#DC2626] leading-relaxed">
+              {validationError || error}
+            </p>
+          </div>
+        )}
+
+        <label className="block text-[12px] font-600 text-[#1E293B] mb-1.5">
+          Reason
+        </label>
+        <select
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[13px] text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] appearance-none cursor-pointer mb-4"
+        >
+          <option value="">Select a reason...</option>
+          {REPORT_REASONS.map((r) => (
+            <option key={r.value} value={r.value}>
+              {r.label}
+            </option>
+          ))}
+        </select>
+
+        <label className="block text-[12px] font-600 text-[#1E293B] mb-1.5">
+          Additional details{" "}
+          {reason === "other" ? (
+            <span className="text-[#DC2626]">*</span>
+          ) : (
+            <span className="text-[#94A3B8] font-500">(optional)</span>
+          )}
+        </label>
+        <textarea
+          value={details}
+          onChange={(e) => setDetails(e.target.value)}
+          rows={3}
+          maxLength={500}
+          placeholder="Tell us more about what's wrong with this comment..."
+          className="w-full resize-none px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl text-[13px] text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
+        />
+
+        <div className="flex justify-end gap-2 mt-5">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="px-4 py-2 rounded-lg text-[13px] font-600 text-[#64748B] hover:bg-[#F8FAFC] transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="px-4 py-2 rounded-lg text-[13px] font-600 bg-[#DC2626] hover:bg-red-700 text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "Reporting..." : "Submit Report"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* =========================================================
    DISCUSSION TAB
 ========================================================= */
 
 function DiscussionTab({ issueId }) {
+  const { user } = useAuth();
+  const currentUserId = user?._id || user?.id;
+
   const {
     data: comments = [],
     isLoading,
@@ -103,6 +277,16 @@ function DiscussionTab({ issueId }) {
   const updateComment = useUpdateComment(issueId);
   const deleteComment = useDeleteComment(issueId);
   const reportComment = useReportComment(issueId);
+  const pinComment = usePinComment(issueId);
+  const unpinComment = useUnpinComment(issueId);
+
+  // A representative can only pin their own comments, and only within the
+  // community they actively represent.
+  const representativeCommunityId =
+    user?.representativeInfo?.community?._id ||
+    user?.representativeInfo?.community;
+  const canPinInCommunity =
+    user?.role === "representative" && !!user?.representativeInfo?.isActive;
 
   const [commentText, setCommentText] = useState("");
 
@@ -113,6 +297,14 @@ function DiscussionTab({ issueId }) {
 
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editingText, setEditingText] = useState("");
+
+  // Delete confirmation
+  const [deleteTargetId, setDeleteTargetId] = useState(null);
+  const [deleteError, setDeleteError] = useState("");
+
+  // Report reason + details
+  const [reportTargetId, setReportTargetId] = useState(null);
+  const [reportError, setReportError] = useState("");
 
   const handlePostComment = async () => {
     const content = commentText.trim();
@@ -144,30 +336,56 @@ function DiscussionTab({ issueId }) {
     }
   };
 
-  const handleDeleteComment = async (commentId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this comment?",
-    );
-    if (!confirmed) return;
+  const handleDeleteComment = (commentId) => {
+    setDeleteError("");
+    setDeleteTargetId(commentId);
+  };
 
+  const confirmDeleteComment = async () => {
     try {
-      await deleteComment.mutateAsync(commentId);
+      await deleteComment.mutateAsync(deleteTargetId);
+      setDeleteTargetId(null);
     } catch (error) {
       console.error("Failed to delete comment:", error);
+      setDeleteError("Couldn't delete this comment. Please try again.");
     }
   };
 
-  const handleReportComment = async (commentId) => {
-    const confirmed = window.confirm(
-      "Are you sure you want to report this comment?",
-    );
-    if (!confirmed) return;
+  const handleReportComment = (commentId) => {
+    setReportError("");
+    setReportTargetId(commentId);
+  };
 
+  const submitReportComment = async ({ reason, details }) => {
     try {
-      await reportComment.mutateAsync(commentId);
-      alert("Comment reported successfully.");
+      await reportComment.mutateAsync({
+        commentId: reportTargetId,
+        reason,
+        details,
+      });
+      setReportTargetId(null);
     } catch (error) {
       console.error("Failed to report comment:", error);
+      setReportError(
+        error.response?.data?.message ||
+          "Couldn't report this comment. Please try again.",
+      );
+    }
+  };
+
+  const handlePinComment = async (commentId) => {
+    try {
+      await pinComment.mutateAsync(commentId);
+    } catch (error) {
+      console.error("Failed to pin comment:", error);
+    }
+  };
+
+  const handleUnpinComment = async (commentId) => {
+    try {
+      await unpinComment.mutateAsync(commentId);
+    } catch (error) {
+      console.error("Failed to unpin comment:", error);
     }
   };
 
@@ -317,7 +535,7 @@ function DiscussionTab({ issueId }) {
         <div className="space-y-4">
           {comments.map((comment) => {
             const authorName = comment.author?.name || "Community Member";
-            const authorCommunity = comment.community?.name || "Community";
+            // const authorCommunity = comment.community?.name || "Community";
 
             const initials = authorName
               .split(" ")
@@ -332,8 +550,13 @@ function DiscussionTab({ issueId }) {
               <CommentItem
                 key={comment._id}
                 comment={comment}
+                currentUserId={currentUserId}
+                canPinInCommunity={canPinInCommunity}
+                representativeCommunityId={representativeCommunityId}
+                onPin={handlePinComment}
+                onUnpin={handleUnpinComment}
                 authorName={authorName}
-                authorCommunity={authorCommunity}
+                // authorCommunity={authorCommunity}
                 initials={initials}
                 isEditing={isEditing}
                 editingText={editingText}
@@ -357,6 +580,27 @@ function DiscussionTab({ issueId }) {
           })}
         </div>
       )}
+
+      {deleteTargetId && (
+        <ConfirmModal
+          title="Delete comment"
+          message="Are you sure you want to delete this comment? This can't be undone."
+          confirmLabel="Delete"
+          isLoading={deleteComment.isPending}
+          error={deleteError}
+          onConfirm={confirmDeleteComment}
+          onCancel={() => setDeleteTargetId(null)}
+        />
+      )}
+
+      {reportTargetId && (
+        <ReportCommentModal
+          isLoading={reportComment.isPending}
+          error={reportError}
+          onSubmit={submitReportComment}
+          onCancel={() => setReportTargetId(null)}
+        />
+      )}
     </div>
   );
 }
@@ -373,9 +617,9 @@ function ReplyItem({ reply, issueId, depth = 0 }) {
   const childReplies = childRepliesData?.replies || [];
 
   const authorName = reply.author?.name || "Community Member";
-  const authorCommunity = reply.author?.community || "Community";
+  // const authorCommunity = reply.author?.community || "Community";
 
-  console.log(authorCommunity, "author community");
+  // console.log(authorCommunity, "author community");
 
   const initials = authorName
     .split(" ")
@@ -423,6 +667,11 @@ function ReplyItem({ reply, issueId, depth = 0 }) {
               {reply.author?.role === "representative" && (
                 <span className="text-[9px] font-600 px-1.5 py-0.5 rounded-full bg-[#0F766E]/10 text-[#0F766E]">
                   Representative
+                </span>
+              )}
+              {reply.author?.representativeInfo?.isVerifiedOfficial && (
+                <span className="text-[9px] font-600 px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-700">
+                  ✓ Verified Official
                 </span>
               )}
             </div>
@@ -536,8 +785,12 @@ function ReplyItem({ reply, issueId, depth = 0 }) {
 
 function CommentItem({
   comment,
+  currentUserId,
+  canPinInCommunity,
+  representativeCommunityId,
+  onPin,
+  onUnpin,
   authorName,
-  authorCommunity,
   initials,
   isEditing,
   editingText,
@@ -555,6 +808,21 @@ function CommentItem({
   setExpandedReplies,
 }) {
   const [showMenu, setShowMenu] = useState(false);
+
+  // Edit/Delete are only for the comment's own author — everyone else
+  // should only see Report in the "⋯" menu.
+  const isOwner =
+    !!currentUserId &&
+    !!comment.author?._id &&
+    String(comment.author._id) === String(currentUserId);
+
+  // Pinning is for announcements — only the active representative of this
+  // comment's own community can pin it, and only on their own comment.
+  const canPin =
+    isOwner &&
+    canPinInCommunity &&
+    !!representativeCommunityId &&
+    String(comment.community) === String(representativeCommunityId);
 
   const replyMutation = useReplyToComment(comment.issue, comment._id);
 
@@ -586,7 +854,29 @@ function CommentItem({
   };
 
   return (
-    <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4 shadow-sm">
+    <div
+      className={`rounded-2xl p-4 shadow-sm ${
+        comment.isPinned
+          ? "bg-amber-50/60 border-2 border-amber-200"
+          : "bg-white border border-[#E2E8F0]"
+      }`}
+    >
+      {comment.isPinned && (
+        <div className="flex items-center gap-1.5 text-[11px] font-700 text-amber-700 mb-2.5">
+          📌 Pinned Announcement
+        </div>
+      )}
+
+      {/* Only the author sees this — the comment stays visible to everyone
+          else exactly as before; a report never hides it by itself, only
+          an admin choosing to hide it does. */}
+      {comment.moderationStatus === "flagged" && isOwner && (
+        <div className="flex items-center gap-1.5 text-[11px] font-600 text-[#94A3B8] mb-2.5">
+          🚩 Someone reported this comment — an admin will review it. It's
+          still visible to others in the meantime.
+        </div>
+      )}
+
       <div className="flex gap-3">
         <div className="w-9 h-9 rounded-full bg-[#DCEDEC] text-[#0F766E] font-700 text-[11px] flex items-center justify-center shrink-0 overflow-hidden">
           {comment.author?.avatarUrl ? (
@@ -606,13 +896,18 @@ function CommentItem({
               <span className="font-600 text-[#1E293B] text-[13px]">
                 {authorName}
               </span>
-              &bull;
-              <span className="font-600 text-[#1E293B] text-[13px]">
-                {authorCommunity}
-              </span>
+              {/* &bull; */}
+              {/* <span className="font-600 text-[#1E293B] text-[13px]">
+                
+              </span> */}
               {comment.author?.role === "representative" && (
                 <span className="text-[10px] font-600 px-2 py-0.5 rounded-full bg-[#0F766E]/10 text-[#0F766E]">
                   Representative
+                </span>
+              )}
+              {comment.author?.representativeInfo?.isVerifiedOfficial && (
+                <span className="text-[10px] font-600 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+                  ✓ Verified Official
                 </span>
               )}
             </div>
@@ -703,28 +998,51 @@ function CommentItem({
                 </button>
 
                 {showMenu && (
-                  <div className="absolute right-0 top-6 z-20 w-32 bg-white border border-[#E2E8F0] rounded-xl shadow-lg py-1">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onStartEdit(comment);
-                        setShowMenu(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-[12px] text-[#64748B] hover:bg-[#F8FAFC]"
-                    >
-                      Edit
-                    </button>
+                  <div className="absolute right-0 top-6 z-20 w-40 bg-white border border-[#E2E8F0] rounded-xl shadow-lg py-1">
+                    {canPin && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (comment.isPinned) {
+                            onUnpin(comment._id);
+                          } else {
+                            onPin(comment._id);
+                          }
+                          setShowMenu(false);
+                        }}
+                        className="w-full text-left px-3 py-2 text-[12px] text-[#B45309] hover:bg-amber-50"
+                      >
+                        {comment.isPinned
+                          ? "📌 Unpin"
+                          : "📌 Pin as Announcement"}
+                      </button>
+                    )}
 
-                    <button
-                      type="button"
-                      onClick={() => {
-                        onDelete(comment._id);
-                        setShowMenu(false);
-                      }}
-                      className="w-full text-left px-3 py-2 text-[12px] text-[#DC2626] hover:bg-red-50"
-                    >
-                      Delete
-                    </button>
+                    {isOwner && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onStartEdit(comment);
+                            setShowMenu(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-[12px] text-[#64748B] hover:bg-[#F8FAFC]"
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            onDelete(comment._id);
+                            setShowMenu(false);
+                          }}
+                          className="w-full text-left px-3 py-2 text-[12px] text-[#DC2626] hover:bg-red-50"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
 
                     <button
                       type="button"
@@ -1333,7 +1651,11 @@ export default function IssueDetail() {
           </h1>
 
           <div className="flex items-center gap-3 text-[13px] text-[#64748B] mb-5">
-            <span>📍 {issue.community?.name}</span>
+            <span>
+              📍 {issue.community?.name}
+              {issue.community?.parent?.name &&
+                `, ${issue.community.parent.name}`}
+            </span>
             <span>
               Reported {new Date(issue.createdAt).toLocaleDateString()}
             </span>
@@ -1444,6 +1766,10 @@ export default function IssueDetail() {
           </div>
 
           {canManageThisIssue && <StatusUpdatePanel issue={issue} />}
+
+          {issue.status === "resolved" && (
+            <ResolutionFeedback issueId={issueId} />
+          )}
 
           <FollowButton issueId={issueId} />
         </div>

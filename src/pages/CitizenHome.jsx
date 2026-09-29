@@ -190,7 +190,9 @@ function getIssueLocation(issue) {
       return issue.community;
     }
 
-    return issue.community.name || "Location not provided";
+    return issue.community.parent?.name
+      ? `${issue.community.name}, ${issue.community.parent.name}`
+      : issue.community.name || "Location not provided";
   }
 
   return "Location not provided";
@@ -324,13 +326,17 @@ export default function CitizenHome() {
   const { user, pendingApplication } = useAuth();
   const navigate = useNavigate();
 
-  const communityId =
-    typeof user?.community === "object" ? user.community?._id : user?.community;
+  // `typeof null === "object"` in JS, so a typeof check here would wrongly
+  // treat "no community" as "has one" — this reads correctly whether
+  // community is null, an unpopulated id string, or a populated object.
+  const communityId = user?.community?._id || user?.community;
 
   const hasCommunity = !!communityId;
+  const hasPendingApplication = pendingApplication?.status === "pending";
 
   const firstName = user?.name?.split(" ")[0] || "there";
   const communityName = user?.community?.name || null;
+  const cityName = user?.community?.parent?.name || null;
 
   /*
    * Get actual issues from backend — only fetch when a community exists
@@ -420,20 +426,25 @@ export default function CitizenHome() {
           </h1>
           <p className="text-[13px] text-[#64748B] mt-1 flex items-center gap-1.5">
             {hasCommunity ? (
-              <>📍 {communityName}, Abuja</>
+              <>
+                📍 {communityName}
+                {cityName ? `, ${cityName}` : ""}
+              </>
             ) : (
               <>You haven't joined a community yet</>
             )}
-            <button
-              className="text-[#0F766E] font-600 hover:underline ml-1"
-              onClick={() =>
-                navigate(
-                  hasCommunity ? "/change-community" : "/signup/onboarding",
-                )
-              }
-            >
-              {hasCommunity ? "Change community" : "Join one"}
-            </button>
+            {!hasPendingApplication && (
+              <button
+                className="text-[#0F766E] font-600 hover:underline ml-1"
+                onClick={() =>
+                  navigate(
+                    hasCommunity ? "/communities" : "/signup/onboarding",
+                  )
+                }
+              >
+                {hasCommunity ? "Change community" : "Join one"}
+              </button>
+            )}
           </p>
         </div>
 
@@ -466,9 +477,7 @@ export default function CitizenHome() {
                   pendingApplication.community?.name ||
                   "your community"}
               </span>{" "}
-              is under review by an administrator. In the meantime, you can
-              browse, comment, and support issues across CivicPulse — you just
-              can't report or propose until you're part of a community.
+              is under review by an administrator.
             </p>
           </div>
         </div>
