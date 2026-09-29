@@ -56,6 +56,24 @@ export function AuthProvider({ children }) {
     return data;
   };
 
+  const updatePassword = async ({ currentPassword, newPassword }) => {
+    const { data } = await authApi.updatePassword({
+      currentPassword,
+      newPassword,
+    });
+    return data;
+  };
+
+  const forgotPassword = async (email) => {
+    const { data } = await authApi.forgotPassword({ email });
+    return data;
+  };
+
+  const resetPassword = async ({ token, newPassword }) => {
+    const { data } = await authApi.resetPassword({ token, newPassword });
+    return data;
+  };
+
   const logout = async () => {
     try {
       await authApi.logoutUser();
@@ -100,6 +118,9 @@ export function AuthProvider({ children }) {
     verifyOtp,
     resendOtp,
     login,
+    updatePassword,
+    forgotPassword,
+    resetPassword,
     logout,
     refreshUser,
     joinCommunity,

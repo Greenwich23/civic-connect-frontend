@@ -8,3 +8,7 @@ export const logoutUser = () => axiosClient.post("/auth/logout");
 export const getCurrentUser = () => axiosClient.get("/auth/me");
 export const updatePassword = (data) =>
   axiosClient.patch("/auth/password", data);
+export const forgotPassword = (data) =>
+  axiosClient.post("/auth/forgot-password", data);
+export const resetPassword = (data) =>
+  axiosClient.post("/auth/reset-password", data);

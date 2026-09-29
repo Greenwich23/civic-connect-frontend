@@ -158,7 +158,7 @@ export default function AppLayout() {
 
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="flex items-center justify-between gap-4 px-6 py-4 border-b border-[#E2E8F0] bg-white">
+        <header className="flex items-center justify-end gap-4 px-6 py-4 border-b border-[#E2E8F0] bg-white">
           {/* <div className="relative flex-1 max-w-md">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]">
               🔍
@@ -169,10 +169,10 @@ export default function AppLayout() {
             />
           </div> */}
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => navigate("/notifications")}
-              className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#F8FAFC]"
+              className="relative w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#F8FAFC] cursor-pointer"
             >
               🔔
               {unreadCount > 0 && (
@@ -180,7 +180,10 @@ export default function AppLayout() {
               )}
             </button>
 
-            <div className="w-9 h-9 rounded-full bg-[#0F766E]/10 text-[#0F766E] font-700 text-[13px] flex items-center justify-center">
+            <div
+              className="w-9 h-9 rounded-full bg-[#0F766E]/10 text-[#0F766E] font-700 text-[13px] flex items-center justify-center cursor-pointer"
+              onClick={() => navigate("/profile")}
+            >
               {user?.name
                 ?.split(" ")
                 .map((n) => n[0])

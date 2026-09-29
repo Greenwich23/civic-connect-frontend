@@ -265,7 +265,7 @@ export default function Signup({ onNavigate }) {
   }, [resendCooldown]);
 
   return (
-    <div className="min-h-full flex items-center justify-center p-4 bg-[#F8FAFC] pt-[50px] pb-[50px]">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#F8FAFC] pt-[50px] pb-[50px]">
       <div className="w-full max-w-lg">
         <Logo onNavigate={onNavigate} />
 

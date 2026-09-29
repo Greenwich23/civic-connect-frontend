@@ -28,6 +28,8 @@ import Contact from "./pages/Contact";
 import AboutRepresentatives from "./pages/AboutRepresentatives";
 import Signup from "./pages/SignUp";
 import Login from "./pages/Login";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 import Onboarding from "./pages/Onboarding";
 import CreateCommunityRequest from "./pages/CreateCommunityRequest";
 import CitizenHome from "./pages/CitizenHome";
@@ -65,6 +67,8 @@ function App() {
       {/* Auth pages — no Navbar/Footer, they render their own centered card */}
       <Route path="/signup" element={<Signup />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/signup/onboarding" element={<Onboarding />} />
       <Route
         path="/signup/community-request"

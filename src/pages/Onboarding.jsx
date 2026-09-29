@@ -72,7 +72,7 @@ export default function Onboarding({ onNavigate }) {
   };
 
   return (
-    <div className="min-h-full flex items-center justify-center p-4 bg-[#F8FAFC]">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[#F8FAFC]">
       <div className="w-full max-w-lg">
         <Logo onNavigate={onNavigate} />
 
