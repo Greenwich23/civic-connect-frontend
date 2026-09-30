@@ -121,7 +121,7 @@ export default function EditProfile() {
             Profile Photo
           </label>
 
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
             <div className="w-20 h-20 rounded-2xl bg-[#0F766E]/15 text-[#0F766E] font-display font-800 text-2xl flex items-center justify-center shrink-0 overflow-hidden">
               {avatarPreview ? (
                 <img
@@ -166,13 +166,13 @@ export default function EditProfile() {
 
         {/* Read-only info */}
         <div className="pt-2 border-t border-[#E2E8F0] space-y-3">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <span className="text-[13px] text-[#64748B]">Email</span>
-            <span className="text-[13px] font-500 text-[#1E293B]">
+            <span className="text-[13px] font-500 text-[#1E293B] break-all text-right">
               {user?.email}
             </span>
           </div>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-3">
             <span className="text-[13px] text-[#64748B]">Community</span>
             <span className="text-[13px] font-500 text-[#1E293B]">
               {user?.community?.name || "None"}

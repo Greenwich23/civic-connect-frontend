@@ -45,7 +45,7 @@ function InputField({
 }) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
         <label className="text-[13px] font-500 text-[#1E293B]">{label}</label>
 
         {rightSlot}
@@ -205,7 +205,7 @@ export default function Login({ onNavigate }) {
       <div className="w-full max-w-md">
         <Logo onNavigate={onNavigate} />
 
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8 civic-shadow">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-5 sm:p-8 civic-shadow">
           <h1 className="font-display font-800 text-[#1E293B] text-2xl mb-1">
             Welcome back
           </h1>

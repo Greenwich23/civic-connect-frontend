@@ -18,7 +18,7 @@ export default function RepresentativeApplications() {
 
   return (
     <div>
-      <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
+      <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl mb-1">
         Representative Applications
       </h1>
       <p className="text-[13px] text-[#64748B] mb-6">
@@ -48,7 +48,7 @@ export default function RepresentativeApplications() {
             to={`/admin/representative-applications/${application._id}`}
             className="bg-white rounded-2xl border border-[#E2E8F0] p-5 hover:shadow-md transition-shadow block"
           >
-            <div className="flex items-center justify-between mb-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
               <span className="text-[11px] font-600 px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
                 ⏳ Pending Review
               </span>

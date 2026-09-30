@@ -127,7 +127,7 @@ export default function UserManagement() {
 
   return (
     <div>
-      <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
+      <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl mb-1">
         User Management
       </h1>
       <p className="text-[13px] text-[#64748B] mb-6">
@@ -189,8 +189,8 @@ export default function UserManagement() {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow overflow-hidden">
-        <table className="w-full text-left">
+      <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow overflow-x-auto">
+        <table className="w-full min-w-[640px] text-left">
           <thead>
             <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
               <th className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">

@@ -68,7 +68,7 @@ export default function ForgotPassword() {
       <div className="w-full max-w-md">
         <Logo />
 
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8 civic-shadow">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-5 sm:p-8 civic-shadow">
           {submitted ? (
             <>
               <div className="w-16 h-16 rounded-full bg-green-50 border border-green-200 flex items-center justify-center mx-auto mb-5">

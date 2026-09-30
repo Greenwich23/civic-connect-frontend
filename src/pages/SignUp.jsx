@@ -269,7 +269,7 @@ export default function Signup({ onNavigate }) {
       <div className="w-full max-w-lg">
         <Logo onNavigate={onNavigate} />
 
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8 civic-shadow">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-5 sm:p-8 civic-shadow">
           {/* Progress */}
           <div className="flex items-center gap-2 mb-7">
             {[1, 2, 3].map((n) => (
@@ -317,7 +317,7 @@ export default function Signup({ onNavigate }) {
               </p>
 
               <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <InputField
                     label="First Name"
                     name="firstName"

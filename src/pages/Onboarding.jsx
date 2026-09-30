@@ -76,7 +76,7 @@ export default function Onboarding({ onNavigate }) {
       <div className="w-full max-w-lg">
         <Logo onNavigate={onNavigate} />
 
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8 civic-shadow">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-5 sm:p-8 civic-shadow">
           {/* Steps indicator */}
           <div className="flex items-center gap-2 mb-6">
             <div className="flex items-center gap-2">

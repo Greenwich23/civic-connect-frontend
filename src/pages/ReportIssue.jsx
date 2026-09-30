@@ -19,14 +19,17 @@ const CATEGORIES = [
 
 function StepIndicator({ currentStep }) {
   return (
-    <div className="flex items-center mb-8">
+    <div className="grid grid-cols-2 gap-x-4 gap-y-3 sm:flex sm:items-center mb-8">
       {STEPS.map((label, i) => {
         const stepNum = i + 1;
         const isDone = stepNum < currentStep;
         const isCurrent = stepNum === currentStep;
 
         return (
-          <div key={label} className="flex items-center flex-1 last:flex-none">
+          <div
+            key={label}
+            className="flex items-center sm:flex-1 sm:last:flex-none"
+          >
             <div className="flex items-center gap-2">
               <div
                 className={`w-7 h-7 rounded-full flex items-center justify-center text-[12px] font-700 shrink-0 ${
@@ -62,7 +65,7 @@ function StepIndicator({ currentStep }) {
               </span>
             </div>
             {i < STEPS.length - 1 && (
-              <div className="flex-1 h-px bg-[#E2E8F0] mx-3" />
+              <div className="hidden sm:block flex-1 h-px bg-[#E2E8F0] mx-3" />
             )}
           </div>
         );
@@ -429,7 +432,7 @@ export default function ReportIssue() {
               </label>
 
               {imagePreviews.length > 0 && (
-                <div className="grid grid-cols-4 gap-2 mt-3">
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mt-3">
                   {imagePreviews.map((src, i) => (
                     <div
                       key={i}

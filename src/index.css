@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+* {
+  scroll-behavior: smooth;
+}
+
 body {
   /* border: solid 1px red; */
 }
@@ -23,4 +27,19 @@ body {
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 20px;
+}
+
+html {
+  scroll-padding-top: 5rem; /* keep anchored sections clear of the sticky navbar */
+}
+
+/* Responsive safety net: media never overflows its container, long words
+   (URLs, unbroken text) wrap instead of stretching the page sideways. */
+img,
+video {
+  max-width: 100%;
+}
+
+main {
+  overflow-wrap: break-word;
 }

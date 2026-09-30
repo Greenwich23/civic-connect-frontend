@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth.js";
 import { useAdminApplications } from "../../hooks/useAdminApplications.js";
@@ -34,6 +35,7 @@ function SidebarLink({ to, icon, label, badge }) {
 export default function AdminLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { data: pendingApplications } = useAdminApplications();
   const { data: flaggedComments } = useFlaggedComments({ page: 1, limit: 1 });
@@ -66,8 +68,24 @@ export default function AdminLayout() {
 
   return (
     <div className="flex min-h-screen bg-[#F8FAFC]">
-      {/* Sidebar */}
-      <aside className="w-64 shrink-0 border-r border-[#E2E8F0] bg-white flex flex-col p-4">
+      {/* Mobile backdrop — tapping it closes the sidebar */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-30 bg-black/40 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Sidebar — off-canvas drawer below lg, always visible from lg up */}
+      <aside
+        onClick={(e) => {
+          if (e.target.closest("a, button")) setSidebarOpen(false);
+        }}
+        className={`fixed inset-y-0 left-0 z-40 w-64 max-w-[85vw] shrink-0 overflow-y-auto border-r border-[#E2E8F0] bg-white flex flex-col p-4 transition-transform duration-200 lg:static lg:z-auto lg:max-w-none lg:translate-x-0 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
         <button
           onClick={() => navigate("/admin-home")}
           className="flex items-center gap-2.5 mb-8 px-1"
@@ -145,9 +163,32 @@ export default function AdminLayout() {
 
       {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="flex items-center justify-end gap-4 px-6 py-4 border-b border-[#E2E8F0] bg-white">
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="text-right leading-tight">
+        <header className="flex items-center justify-between gap-4 px-4 sm:px-6 py-4 border-b border-[#E2E8F0] bg-white">
+          <button
+            type="button"
+            onClick={() => setSidebarOpen((o) => !o)}
+            aria-label={sidebarOpen ? "Close menu" : "Open menu"}
+            aria-expanded={sidebarOpen}
+            className="lg:hidden w-9 h-9 -ml-1 flex items-center justify-center rounded-lg text-[#1E293B] hover:bg-[#F8FAFC]"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              className="w-5 h-5"
+            >
+              {sidebarOpen ? (
+                <path d="M6 6l12 12M18 6L6 18" />
+              ) : (
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
+
+          <div className="flex items-center gap-3 shrink-0 ml-auto">
+            <div className="text-right leading-tight hidden sm:block">
               <div className="text-[13px] font-600 text-[#1E293B]">
                 {user?.name || "Admin"}
               </div>
@@ -162,7 +203,7 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 overflow-y-auto">
           <Outlet />
         </main>
       </div>

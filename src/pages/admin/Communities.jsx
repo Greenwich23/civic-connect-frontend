@@ -179,8 +179,8 @@ export default function Communities() {
 
   return (
     <div>
-      <div className="flex items-start justify-between gap-4 mb-1">
-        <h1 className="font-display font-800 text-[#1E293B] text-3xl">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-1">
+        <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl">
           Communities
         </h1>
         <button
@@ -242,7 +242,7 @@ export default function Communities() {
               to={`/admin/communities/${community._id}`}
               className="bg-white rounded-2xl border border-[#E2E8F0] p-5 hover:shadow-md transition-shadow block"
             >
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
                 <span className="text-[11px] font-600 px-2 py-0.5 rounded-full bg-[#F1F5F9] text-[#64748B] capitalize">
                   {community.level}
                 </span>

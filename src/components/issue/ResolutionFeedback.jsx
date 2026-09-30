@@ -98,7 +98,7 @@ function CommunityVerdict({ issueId }) {
 
   return (
     <div className="bg-white border border-[#E2E8F0] rounded-2xl p-4">
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div className="text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">
           Community Verdict
         </div>

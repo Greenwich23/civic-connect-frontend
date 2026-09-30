@@ -1,3 +1,7 @@
+import { useNavigate } from "react-router-dom";
+import * as CountUpModule from "react-countup";
+import { usePublicStats } from "../hooks/usePublicStats";
+
 const steps = [
   {
     num: "01",
@@ -59,30 +63,36 @@ const features = [
   },
 ];
 
-const stats = [
-  { value: "12,400+", label: "Issues reported" },
-  { value: "3,800+", label: "Issues resolved" },
-  { value: "89,000+", label: "Citizens engaged" },
-  { value: "240+", label: "Communities active" },
+// react-countup is CommonJS; depending on how the bundler interops, the
+// component is either the default export or nested one level deeper.
+const CountUp = CountUpModule.default?.default ?? CountUpModule.default;
+
+const statItems = [
+  { key: "issuesReported", label: "Issues reported" },
+  { key: "issuesResolved", label: "Issues resolved" },
+  { key: "citizens", label: "Citizens engaged" },
+  { key: "communities", label: "Communities" },
 ];
 
-export default function Landing({ onNavigate }) {
+export default function Landing() {
+  const navigate = useNavigate();
+  const { stats, loading } = usePublicStats();
   return (
     <div className="min-h-full bg-white font-body">
       {/* Header */}
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#F8FAFC] flex justify-between px-[100px]">
+      <section className="relative overflow-hidden bg-[#F8FAFC] flex justify-between px-0 lg:px-[100px]">
         <div className="absolute inset-0 bg-gradient-to-br from-[#0F766E]/5 via-transparent to-[#2563EB]/5 pointer-events-none" />
 
-        <div className="px-4 md:px-8 pt-20 pb-24 md:pt-28 md:pb-32">
+        <div className="px-4 md:px-8 pt-12 pb-16 sm:pt-20 sm:pb-24 md:pt-28 md:pb-32">
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 bg-[#0F766E]/10 text-[#0F766E] text-[12px] font-600 uppercase tracking-wider px-3 py-1 rounded-full mb-6">
               <span className="w-1.5 h-1.5 rounded-full bg-[#0F766E]" />
               Civic Community Platform
             </div>
 
-            <h1 className="font-display font-800 text-[#1E293B] text-4xl md:text-5xl lg:text-6xl leading-tight tracking-tight mb-6">
+            <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-tight tracking-tight mb-6">
               Make Your Community
               <br />
               <span className="text-[#0F766E]">Better. Together.</span>
@@ -96,14 +106,14 @@ export default function Landing({ onNavigate }) {
 
             <div className="flex flex-wrap items-center gap-4">
               <button
-                onClick={() => onNavigate("signup")}
+                onClick={() => navigate("/signup")}
                 className="bg-[#0F766E] hover:bg-[#115E59] text-white font-600 text-[15px] px-7 py-3.5 rounded-xl transition-colors civic-shadow-md"
               >
                 Get Started Free
               </button>
 
               <button
-                onClick={() => onNavigate("citizen-issues")}
+                onClick={() => navigate("/signup")}
                 className="border border-[#E2E8F0] text-[#1E293B] font-500 text-[15px] px-7 py-3.5 rounded-xl hover:border-[#0F766E]/30 hover:bg-[#0F766E]/5 transition-colors"
               >
                 Explore Issues →
@@ -164,10 +174,20 @@ export default function Landing({ onNavigate }) {
       <section id="impact" className="border-y border-[#E2E8F0] bg-white">
         <div className="max-w-6xl mx-auto px-4 md:px-8 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((s) => (
-              <div key={s.label} className="text-center">
+            {statItems.map((s) => (
+              <div key={s.key} className="text-center">
                 <div className="font-display font-800 text-2xl md:text-3xl text-[#0F766E] mb-1">
-                  {s.value}
+                  {loading || !stats ? (
+                    "—"
+                  ) : (
+                    <CountUp
+                      end={Number(stats[s.key] ?? 0)}
+                      duration={2.5}
+                      separator=","
+                      enableScrollSpy
+                      scrollSpyOnce
+                    />
+                  )}
                 </div>
 
                 <div className="text-sm text-[#64748B]">{s.label}</div>
@@ -181,7 +201,7 @@ export default function Landing({ onNavigate }) {
       <section id="how" className="py-20 md:py-28 bg-[#F8FAFC]">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           <div className="text-center mb-14">
-            <h2 className="font-display font-800 text-[#1E293B] text-3xl md:text-4xl mb-4">
+            <h2 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl md:text-4xl mb-4">
               How CivicPulse works
             </h2>
 
@@ -223,7 +243,7 @@ export default function Landing({ onNavigate }) {
       <section id="features" className="py-20 md:py-28 bg-white">
         <div className="max-w-6xl mx-auto px-4 md:px-8">
           <div className="text-center mb-14">
-            <h2 className="font-display font-800 text-[#1E293B] text-3xl md:text-4xl mb-4">
+            <h2 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl md:text-4xl mb-4">
               Built for real civic participation
             </h2>
 

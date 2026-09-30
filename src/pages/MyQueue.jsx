@@ -16,7 +16,7 @@ export default function MyQueue() {
 
   return (
     <div>
-      <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
+      <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl mb-1">
         My Community Queue
       </h1>
       <p className="text-[13px] text-[#64748B] mb-6">

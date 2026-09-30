@@ -58,7 +58,7 @@ export default function AboutRepresentatives() {
           <div className="inline-flex items-center gap-2 bg-[#0F766E]/10 text-[#0F766E] text-[12px] font-600 uppercase tracking-wider px-3 py-1 rounded-full mb-6">
             For Citizens & Aspiring Representatives
           </div>
-          <h1 className="font-display font-800 text-[#1E293B] text-3xl md:text-4xl leading-tight tracking-tight mb-5">
+          <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl md:text-4xl leading-tight tracking-tight mb-5">
             What a CivicPulse representative actually is
           </h1>
           <p className="text-[#64748B] text-[16px] leading-relaxed max-w-2xl mx-auto">

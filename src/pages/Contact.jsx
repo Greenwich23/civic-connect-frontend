@@ -1,14 +1,22 @@
 import { useState } from "react";
+import { sendContactMessage } from "../apis/contactApi";
 
 const contactInfo = [
-  { icon: "📧", label: "Email", value: "hello@civicpulse.ng" },
+  {
+    icon: "📧",
+    label: "Email",
+    value: "civicpulsecontact@gmail.com",
+    href: "mailto:civicpulsecontact@gmail.com",
+  },
   { icon: "📍", label: "Headquarters", value: "Abuja, FCT, Nigeria" },
   { icon: "🐦", label: "Twitter / X", value: "@CivicPulseNG" },
   { icon: "💼", label: "LinkedIn", value: "CivicPulse Nigeria" },
 ];
 
-export default function Contact({ onNavigate }) {
+export default function Contact() {
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -19,9 +27,23 @@ export default function Contact({ onNavigate }) {
   const update = (field) => (e) =>
     setForm((f) => ({ ...f, [field]: e.target.value }));
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setSending(true);
+    setError("");
+    try {
+      await sendContactMessage(form);
+      setForm({ name: "", email: "", subject: "", message: "" });
+      setSubmitted(true);
+    } catch (err) {
+      setError(
+        err.response?.data?.errors?.[0]?.message ||
+          err.response?.data?.message ||
+          "Could not send your message. Please try again.",
+      );
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -119,6 +141,7 @@ export default function Contact({ onNavigate }) {
                     </label>
 
                     <select
+                      required
                       value={form.subject}
                       onChange={update("subject")}
                       className="w-full px-3.5 py-2.5 bg-white border border-[#E2E8F0] rounded-xl text-[14px] text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] transition-colors appearance-none cursor-pointer"
@@ -143,16 +166,22 @@ export default function Contact({ onNavigate }) {
                       value={form.message}
                       onChange={update("message")}
                       placeholder="Tell us how we can help..."
+                      minLength={10}
                       rows={6}
                       className="w-full px-3.5 py-2.5 bg-white border border-[#E2E8F0] rounded-xl text-[14px] text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E] transition-colors resize-none"
                     />
                   </div>
 
+                  {error && (
+                    <p className="text-[13px] text-[#DC2626]">{error}</p>
+                  )}
+
                   <button
                     type="submit"
-                    className="w-full bg-[#0F766E] hover:bg-[#115E59] text-white font-600 text-[14px] py-3 rounded-xl transition-colors"
+                    disabled={sending}
+                    className="w-full bg-[#0F766E] hover:bg-[#115E59] text-white font-600 text-[14px] py-3 rounded-xl transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                   >
-                    Send Message
+                    {sending ? "Sending..." : "Send Message"}
                   </button>
                 </form>
               )}
@@ -177,6 +206,7 @@ export default function Contact({ onNavigate }) {
                     key={item.label}
                     className="flex items-center gap-3 p-3.5 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]"
                   >
+                    <a href=""></a>
                     <span className="text-xl shrink-0">{item.icon}</span>
 
                     <div>
@@ -184,15 +214,24 @@ export default function Contact({ onNavigate }) {
                         {item.label}
                       </div>
 
-                      <div className="text-[13px] font-500 text-[#1E293B]">
-                        {item.value}
-                      </div>
+                      {item.href ? (
+                        <a
+                          href={item.href}
+                          className="text-[13px] font-500 text-[#0F766E] hover:underline"
+                        >
+                          {item.value}
+                        </a>
+                      ) : (
+                        <div className="text-[13px] font-500 text-[#1E293B]">
+                          {item.value}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="bg-[#0F766E]/5 border border-[#0F766E]/15 rounded-xl p-4">
+              {/* <div className="bg-[#0F766E]/5 border border-[#0F766E]/15 rounded-xl p-4">
                 <h3 className="font-display font-700 text-[#1E293B] text-[13px] mb-1">
                   Want to bring CivicPulse to your community?
                 </h3>
@@ -208,7 +247,7 @@ export default function Contact({ onNavigate }) {
                 >
                   Learn about partnerships →
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

@@ -125,7 +125,7 @@ export default function Profile() {
 
       {/* Reported Issues */}
       <div className="bg-white rounded-2xl border border-[#E2E8F0] p-6 civic-shadow">
-        <div className="flex items-center justify-between mb-5">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-5">
           <h3 className="font-display font-800 text-lg text-[#1E293B]">
             Your Reported Issues
           </h3>
