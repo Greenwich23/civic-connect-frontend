@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/static-components */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-unused-vars */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useIssue } from "../hooks/useIssues.js";
 import { useVoteStatus, useCastVote } from "../hooks/useVotes.js";
@@ -16,7 +16,9 @@ import {
   useReportComment,
   usePinComment,
   useUnpinComment,
+  useToggleCommentLike,
 } from "../hooks/useComments.js";
+import { Heart, ThumbsUp, ThumbsDown } from "lucide-react";
 import {
   useSaveIssue,
   useIsIssueSaved,
@@ -606,6 +608,61 @@ function DiscussionTab({ issueId, totalComments }) {
   );
 }
 
+// Heart toggle with a like count. Updates instantly, then settles on the
+// server's numbers; rolls back if the request fails.
+function LikeButton({ comment }) {
+  const toggleLike = useToggleCommentLike();
+  const [state, setState] = useState({
+    liked: !!comment.likedByMe,
+    count: comment.likeCount ?? 0,
+  });
+
+  // Follow the server's values when the comment list refetches
+  useEffect(() => {
+    setState({
+      liked: !!comment.likedByMe,
+      count: comment.likeCount ?? 0,
+    });
+  }, [comment.likedByMe, comment.likeCount]);
+
+  const handleClick = () => {
+    if (toggleLike.isPending) return;
+
+    const previous = state;
+    setState({
+      liked: !previous.liked,
+      count: Math.max(0, previous.count + (previous.liked ? -1 : 1)),
+    });
+
+    toggleLike.mutate(comment._id, {
+      onSuccess: (data) =>
+        setState({ liked: data.liked, count: data.likeCount }),
+      onError: () => setState(previous),
+    });
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={handleClick}
+      aria-pressed={state.liked}
+      aria-label={state.liked ? "Unlike comment" : "Like comment"}
+      className={`flex items-center gap-1.5 text-[12px] transition-colors ${
+        state.liked
+          ? "text-[#DC2626]"
+          : "text-[#64748B] hover:text-[#DC2626]"
+      }`}
+    >
+      <Heart
+        size={15}
+        className={state.liked ? "fill-[#DC2626]" : ""}
+        strokeWidth={2}
+      />
+      <span>{state.count}</span>
+    </button>
+  );
+}
+
 function ReplyItem({ reply, issueId, depth = 0 }) {
   const [isReplying, setIsReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
@@ -687,6 +744,8 @@ function ReplyItem({ reply, issueId, depth = 0 }) {
                   ? new Date(reply.createdAt).toLocaleDateString()
                   : "Recently"}
               </span>
+
+              <LikeButton comment={reply} />
 
               <button
                 type="button"
@@ -961,12 +1020,7 @@ function CommentItem({
 
           {!isEditing && (
             <div className="flex items-center gap-5 mt-3">
-              <button
-                type="button"
-                className="flex items-center gap-1.5 text-[12px] text-[#64748B] hover:text-[#0F766E] transition-colors"
-              >
-                ♡ Helpful
-              </button>
+              <LikeButton comment={comment} />
 
               <button
                 type="button"
@@ -1332,7 +1386,7 @@ function ProposalCard({ proposal, index, pct, total, support, oppose }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <button
           onClick={() => castVote.mutate("support")}
           disabled={castVote.isPending}
@@ -1342,7 +1396,8 @@ function ProposalCard({ proposal, index, pct, total, support, oppose }) {
               : "bg-[#0F766E]/10 text-[#0F766E] hover:bg-[#0F766E]/20"
           }`}
         >
-          👍 Support ({support})
+          <ThumbsUp size={14} />
+          Support ({support})
         </button>
 
         <button
@@ -1354,10 +1409,12 @@ function ProposalCard({ proposal, index, pct, total, support, oppose }) {
               : "bg-[#F1F5F9] text-[#64748B] hover:bg-[#E2E8F0]"
           }`}
         >
-          👎 Oppose ({oppose})
+          <ThumbsDown size={14} />
+          Oppose ({oppose})
         </button>
 
-        <div className="ml-auto flex items-center gap-2">
+        {/* Under 600px the proposer drops onto its own line below the buttons */}
+        <div className="ml-auto flex items-center gap-2 max-[600px]:ml-0 max-[600px]:basis-full">
           <div className="w-6 h-6 rounded-full bg-[#0F766E]/10 text-[#0F766E] font-700 text-[10px] flex items-center justify-center">
             {authorInitials}
           </div>
@@ -1688,7 +1745,8 @@ export default function IssueDetail() {
                   : "border-[#0F766E] text-[#0F766E] hover:bg-[#0F766E]/5"
               }`}
             >
-              👍 {hasVoted ? "Supported" : "Support"} · {issue.supportCount}
+              <ThumbsUp size={14} />
+              {hasVoted ? "Supported" : "Support"} · {issue.supportCount}
             </button>
           </div>
 

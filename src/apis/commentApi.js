@@ -107,3 +107,16 @@ export const unpinComment = async (commentId) => {
 
   return data;
 };
+
+/*
+=========================================================
+LIKES
+=========================================================
+*/
+
+// Like / unlike a comment (toggles) — returns { liked, likeCount }
+export const toggleCommentLike = async (commentId) => {
+  const { data } = await axiosClient.post(`/comments/${commentId}/like`);
+
+  return data;
+};
