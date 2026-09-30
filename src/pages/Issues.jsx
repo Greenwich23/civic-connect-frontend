@@ -57,7 +57,11 @@ export default function Issues() {
   // return every issue on the platform instead of none.
   const showJoinPrompt = scope === "mine" && !hasCommunity;
 
-  const { data: issues, isLoading, isFetching } = useIssues(filters, {
+  const {
+    data: issues,
+    isLoading,
+    isFetching,
+  } = useIssues(filters, {
     enabled: !showJoinPrompt,
   });
 
@@ -67,9 +71,9 @@ export default function Issues() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
+          <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl mb-1">
             Community Issues
           </h1>
           <p className="text-[13px] text-[#64748B]">
@@ -90,8 +94,8 @@ export default function Issues() {
 
       {/* Filter panel */}
       <div className="bg-white border border-[#E2E8F0] rounded-2xl p-5 mb-5">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="relative flex-1">
+        <div className="flex flex-col gap-3 mb-4">
+          <div className="relative w-full">
             <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94A3B8]">
               🔍
             </span>
@@ -103,30 +107,32 @@ export default function Issues() {
             />
           </div>
 
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="px-4 py-2.5 bg-white border border-[#E2E8F0] rounded-lg text-[13px] text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 cursor-pointer"
-          >
-            <option value="">All Status</option>
-            <option value="reported">Reported</option>
-            <option value="under_review">Under Review</option>
-            <option value="action_planned">Action Planned</option>
-            <option value="in_progress">In Progress</option>
-            <option value="resolved">Resolved</option>
-          </select>
+          <div className="flex gap-3">
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="flex-1 min-w-0 px-4 py-2.5 bg-white border border-[#E2E8F0] rounded-lg text-[13px] text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 cursor-pointer"
+            >
+              <option value="">All Status</option>
+              <option value="reported">Reported</option>
+              <option value="under_review">Under Review</option>
+              <option value="action_planned">Action Planned</option>
+              <option value="in_progress">In Progress</option>
+              <option value="resolved">Resolved</option>
+            </select>
 
-          <select
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-            className="px-4 py-2.5 bg-white border border-[#E2E8F0] rounded-lg text-[13px] text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 cursor-pointer"
-          >
-            <option value="trending">Trending</option>
-            <option value="most_supported">Most Supported</option>
-            <option value="most_discussed">Most Discussed</option>
-            <option value="recent">Recently Added</option>
-            <option value="resolved">Recently Resolved</option>
-          </select>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="flex-1 min-w-0 px-4 py-2.5 bg-white border border-[#E2E8F0] rounded-lg text-[13px] text-[#1E293B] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 cursor-pointer"
+            >
+              <option value="trending">Trending</option>
+              <option value="most_supported">Most Supported</option>
+              <option value="most_discussed">Most Discussed</option>
+              <option value="recent">Recently Added</option>
+              <option value="resolved">Recently Resolved</option>
+            </select>
+          </div>
         </div>
 
         {/* Category pills */}

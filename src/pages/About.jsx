@@ -81,7 +81,7 @@ export default function About({ onNavigate }) {
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="font-display font-800 text-[#1E293B] text-3xl md:text-4xl mb-6">
+              <h2 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl md:text-4xl mb-6">
                 The problem we solve
               </h2>
               <div className="space-y-4 text-[#64748B] text-[15px] leading-relaxed">
@@ -104,7 +104,7 @@ export default function About({ onNavigate }) {
                 </p>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 min-[420px]:grid-cols-2 gap-4">
               {[
                 { icon: "❌", before: "Reports disappear into bureaucracy" },
                 { icon: "❌", before: "No accountability for inaction" },
@@ -130,7 +130,7 @@ export default function About({ onNavigate }) {
       <section className="bg-[#F8FAFC] py-16 md:py-24">
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <div className="text-center mb-14">
-            <h2 className="font-display font-800 text-[#1E293B] text-3xl md:text-4xl mb-4">
+            <h2 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl md:text-4xl mb-4">
               How CivicPulse works
             </h2>
             <p className="text-[#64748B] text-lg max-w-2xl mx-auto">
@@ -168,7 +168,7 @@ export default function About({ onNavigate }) {
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-start">
             <div>
-              <h2 className="font-display font-800 text-[#1E293B] text-3xl md:text-4xl mb-6">
+              <h2 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl md:text-4xl mb-6">
                 How communities work
               </h2>
               <div className="space-y-4 text-[#64748B] text-[15px] leading-relaxed">
@@ -238,7 +238,7 @@ export default function About({ onNavigate }) {
       <section className="bg-[#F8FAFC] py-16 md:py-24">
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="font-display font-800 text-[#1E293B] text-3xl md:text-4xl mb-4">
+            <h2 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl md:text-4xl mb-4">
               Community Representatives
             </h2>
             <p className="text-[#64748B] text-lg max-w-2xl mx-auto">
@@ -285,7 +285,7 @@ export default function About({ onNavigate }) {
       <section className="py-16 md:py-24">
         <div className="max-w-5xl mx-auto px-4 md:px-8">
           <div className="text-center mb-12">
-            <h2 className="font-display font-800 text-[#1E293B] text-3xl md:text-4xl mb-4">
+            <h2 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl md:text-4xl mb-4">
               Our principles
             </h2>
           </div>

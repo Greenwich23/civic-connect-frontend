@@ -37,7 +37,7 @@ function StatCardSkeleton() {
 function PreviewSection({ title, icon, viewAllTo, children }) {
   return (
     <div>
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
         <h2 className="font-700 text-[#1E293B] text-[17px] flex items-center gap-2">
           {icon} {title}
         </h2>
@@ -154,7 +154,7 @@ export default function AdminHome() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
+        <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl mb-1">
           Welcome back, {user?.name?.split(" ")[0] || "Admin"}
         </h1>
         <p className="text-[13px] text-[#64748B]">

@@ -137,7 +137,7 @@ export default function CommunityDetail() {
     <div className="max-w-4xl">
       {backButton}
 
-      <div className="flex items-start justify-between gap-4 mb-6">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="font-display font-800 text-[#1E293B] text-2xl md:text-3xl mb-1">
             {community.name}
@@ -174,7 +174,7 @@ export default function CommunityDetail() {
       )}
 
       {/* STATS */}
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-1 min-[420px]:grid-cols-3 gap-3 sm:gap-4 mb-6">
         <div className="rounded-xl p-5 bg-[#F1F5F9] text-[#1E293B]">
           <div className="text-3xl font-800">{membersPagination.total}</div>
           <div className="text-[13px] mt-1 opacity-80">Members</div>
@@ -194,13 +194,13 @@ export default function CommunityDetail() {
       {/* MEMBERS */}
       <div className="mb-6">
         <h2 className="font-700 text-[#1E293B] text-[15px] mb-3">Members</h2>
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow overflow-hidden">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow overflow-x-auto">
           {members.length === 0 ? (
             <div className="p-8 text-center text-[13px] text-[#64748B]">
               No members in this community yet.
             </div>
           ) : (
-            <table className="w-full text-left">
+            <table className="w-full min-w-[560px] text-left">
               <thead>
                 <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
                   <th className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">

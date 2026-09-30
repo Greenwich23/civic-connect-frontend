@@ -1,12 +1,15 @@
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
 export default function Navbar() {
   const { isAuthenticated, user } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#E2E8F0]">
-      <div className="w-[85%] mx-auto px-4 md:px-8 h-16 flex items-center justify-between">
+      <div className="w-full lg:w-[85%] mx-auto px-4 md:px-8 h-16 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-[#0F766E] flex items-center justify-center">
             <svg
@@ -29,19 +32,19 @@ export default function Navbar() {
           </NavLink>
         </div>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm text-[#64748B]">
-          <a href="#how" className="hover:text-[#1E293B] transition-colors">
+        <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm text-[#64748B]">
+          <Link to="/#how" className="hover:text-[#1E293B] transition-colors">
             How it works
-          </a>
-          <a
-            href="#features"
+          </Link>
+          <Link
+            to="/#features"
             className="hover:text-[#1E293B] transition-colors"
           >
             Features
-          </a>
-          <a href="#impact" className="hover:text-[#1E293B] transition-colors">
+          </Link>
+          <Link to="/#impact" className="hover:text-[#1E293B] transition-colors">
             Impact
-          </a>
+          </Link>
           <NavLink
             to="/about"
             className="hover:text-[#1E293B] transition-colors"
@@ -56,7 +59,7 @@ export default function Navbar() {
           </NavLink>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {isAuthenticated ? (
             <NavLink
               to="/citizen-home"
@@ -91,8 +94,53 @@ export default function Navbar() {
               </NavLink>
             </>
           )}
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg text-[#1E293B] hover:bg-[#F8FAFC]"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              className="w-5 h-5"
+            >
+              {menuOpen ? (
+                <path d="M6 6l12 12M18 6L6 18" />
+              ) : (
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              )}
+            </svg>
+          </button>
         </div>
       </div>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <nav className="md:hidden border-t border-[#E2E8F0] bg-white px-4 py-3 flex flex-col text-sm text-[#64748B]">
+          {[
+            { to: "/#how", label: "How it works" },
+            { to: "/#features", label: "Features" },
+            { to: "/#impact", label: "Impact" },
+            { to: "/about", label: "About" },
+            { to: "/contact", label: "Contact Us" },
+          ].map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={closeMenu}
+              className="py-3 border-b border-[#F1F5F9] last:border-b-0 hover:text-[#1E293B]"
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      )}
     </header>
   );
 }

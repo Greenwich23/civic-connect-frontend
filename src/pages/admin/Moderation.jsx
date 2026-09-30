@@ -134,7 +134,7 @@ function CommentsModeration() {
                 key={comment._id}
                 className="bg-white rounded-2xl border border-[#E2E8F0] p-5 civic-shadow"
               >
-                <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-[#0F766E]/10 text-[#0F766E] font-700 text-[12px] flex items-center justify-center shrink-0">
                       {comment.author?.name?.[0]?.toUpperCase() || "?"}
@@ -291,7 +291,7 @@ function MessagesModeration() {
                 key={message._id}
                 className="bg-white rounded-2xl border border-[#E2E8F0] p-5 civic-shadow"
               >
-                <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full bg-[#0F766E]/10 text-[#0F766E] font-700 text-[12px] flex items-center justify-center shrink-0">
                       {message.sender?.name?.[0]?.toUpperCase() || "?"}
@@ -398,7 +398,7 @@ export default function Moderation() {
 
   return (
     <div>
-      <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
+      <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl mb-1">
         Moderation
       </h1>
       <p className="text-[13px] text-[#64748B] mb-6">

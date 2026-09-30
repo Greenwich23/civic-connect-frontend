@@ -146,7 +146,7 @@ export default function IssueDetail() {
     <div className="max-w-3xl">
       {backButton}
 
-      <div className="flex items-start justify-between gap-4 mb-6">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="font-display font-800 text-[#1E293B] text-2xl md:text-3xl mb-1">
             {issue.title}

@@ -498,7 +498,7 @@ function DiscussionTab({ issueId }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
         <div>
           <h3 className="font-700 text-[#1E293B] text-[14px]">
             Community Discussion
@@ -891,8 +891,8 @@ function CommentItem({
         </div>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="font-600 text-[#1E293B] text-[13px]">
                 {authorName}
               </span>
@@ -1221,7 +1221,7 @@ function ProposalsTab({ issueId }) {
 
   return (
     <div className="space-y-4 py-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-[#64748B] text-[13px]">
           The community has submitted {proposals?.length || 0}{" "}
           {proposals?.length === 1 ? "proposal" : "proposals"} for this issue.
@@ -1317,7 +1317,7 @@ function ProposalCard({ proposal, index, pct, total, support, oppose }) {
       </div>
 
       <div className="mb-3">
-        <div className="flex items-center justify-between mb-1.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
           <span className="text-[12px] font-600 text-[#0F766E]">
             {pct}% Community Support
           </span>
@@ -1567,7 +1567,7 @@ export default function IssueDetail() {
         ← Back to Issues
       </button>
 
-      <div className="grid lg:grid-cols-[1fr_320px] gap-6">
+      <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_320px] gap-6">
         <div>
           {issue.images?.length > 0 && (
             <div className="mb-5">
@@ -1633,7 +1633,7 @@ export default function IssueDetail() {
             </div>
           )}
 
-          <div className="flex items-center gap-2 mb-3">
+          <div className="flex flex-wrap items-center gap-2 mb-3">
             <span className="text-[12px] text-[#64748B]">
               🚗 {issue.category}
             </span>
@@ -1650,7 +1650,7 @@ export default function IssueDetail() {
             {issue.title}
           </h1>
 
-          <div className="flex items-center gap-3 text-[13px] text-[#64748B] mb-5">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] text-[#64748B] mb-5">
             <span>
               📍 {issue.community?.name}
               {issue.community?.parent?.name &&
@@ -1665,7 +1665,7 @@ export default function IssueDetail() {
             {issue.description}
           </p>
 
-          <div className="flex items-center justify-between pb-5 border-b border-[#E2E8F0]">
+          <div className="flex flex-wrap items-center justify-between gap-3 pb-5 border-b border-[#E2E8F0]">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-full bg-[#0F766E]/10 text-[#0F766E] font-700 text-[13px] flex items-center justify-center">
                 {issue.reportedBy?.name?.[0]?.toUpperCase() || "U"}
@@ -1691,7 +1691,7 @@ export default function IssueDetail() {
             </button>
           </div>
 
-          <div className="flex items-center gap-1 mt-5 border-b border-[#E2E8F0]">
+          <div className="flex items-center gap-1 mt-5 border-b border-[#E2E8F0] overflow-x-auto">
             {[
               { key: "discussion", label: "Discussion" },
               { key: "proposals", label: "Proposals" },

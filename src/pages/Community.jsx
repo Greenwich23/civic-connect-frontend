@@ -84,7 +84,7 @@ export default function CommunityPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-3 gap-4 mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mt-6">
           <div className="bg-[#F8FAFC] rounded-xl p-4 text-center">
             <div className="text-2xl font-800 text-[#1E293B]">
               {stats.memberCount}

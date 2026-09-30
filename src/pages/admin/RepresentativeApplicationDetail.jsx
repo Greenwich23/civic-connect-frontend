@@ -144,7 +144,7 @@ export default function RepresentativeApplicationDetail() {
     <div className="max-w-3xl">
       {backButton}
 
-      <div className="flex items-start justify-between gap-4 mb-6">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="font-display font-800 text-[#1E293B] text-2xl md:text-3xl mb-1">
             {communityName || "Application"}
@@ -185,7 +185,7 @@ export default function RepresentativeApplicationDetail() {
           </div>
 
           <div className="mt-5 p-4 rounded-xl bg-red-50 border border-red-200">
-            <div className="flex items-center justify-between mb-1.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
               <div className="text-[12px] font-600 text-[#DC2626] uppercase tracking-wider">
                 National Identification Number (NIN)
               </div>
@@ -229,7 +229,7 @@ export default function RepresentativeApplicationDetail() {
         {/* Official status claim */}
         {application.claimsOfficialStatus && (
           <div className="bg-white rounded-2xl border border-amber-200 p-6 civic-shadow">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
               <h2 className="font-display font-700 text-[#1E293B] text-[15px]">
                 Local Government / Council Claim
               </h2>

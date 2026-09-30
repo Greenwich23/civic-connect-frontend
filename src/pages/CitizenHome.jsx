@@ -50,7 +50,7 @@ function IssueCard({
       )}
 
       <div className="p-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <span className="text-[12px] text-[#64748B] flex items-center gap-1">
             {categoryIcon} {category}
           </span>
@@ -238,7 +238,7 @@ function RecentIssueRow({ issue, onClick }) {
       onClick={onClick}
       className="bg-white rounded-2xl border border-[#E2E8F0] p-5 hover:shadow-md transition-shadow cursor-pointer"
     >
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
         <span className="text-[12px] text-[#64748B] flex items-center gap-1.5">
           {getCategoryIcon(issue.category)} {getCategoryLabel(issue.category)}
         </span>
@@ -419,7 +419,7 @@ export default function CitizenHome() {
   return (
     <div>
       {/* GREETING */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
           <h1 className="font-display font-800 text-[#1E293B] text-2xl flex items-center gap-2">
             Good morning, {firstName} 👋
@@ -526,7 +526,7 @@ export default function CitizenHome() {
           )}
 
           {/* TRENDING */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
             <h2 className="font-700 text-[#1E293B] text-[17px] flex items-center gap-2">
               🔥 Trending in {communityName}
             </h2>
@@ -584,9 +584,9 @@ export default function CitizenHome() {
           )}
 
           {/* RECENT ISSUES + SIDEBAR */}
-          <div className="grid lg:grid-cols-[1fr_320px] gap-6">
+          <div className="grid grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_320px] gap-6">
             <div>
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <h2 className="font-700 text-[#1E293B] text-[18px]">
                   Recent Issues
                 </h2>

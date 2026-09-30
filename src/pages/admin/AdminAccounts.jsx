@@ -213,8 +213,8 @@ export default function AdminAccounts() {
 
   return (
     <div>
-      <div className="flex items-start justify-between gap-4 mb-1">
-        <h1 className="font-display font-800 text-[#1E293B] text-3xl">
+      <div className="flex flex-wrap items-start justify-between gap-4 mb-1">
+        <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl">
           Admins
         </h1>
         <button
@@ -274,8 +274,8 @@ export default function AdminAccounts() {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow overflow-hidden">
-        <table className="w-full text-left">
+      <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow overflow-x-auto">
+        <table className="w-full min-w-[640px] text-left">
           <thead>
             <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
               <th className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">

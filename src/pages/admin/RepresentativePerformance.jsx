@@ -28,7 +28,7 @@ function StatusBadge({ row }) {
 // Same fix as admin/Issues.jsx — a native <table> and a CSS grid size
 // columns independently, so header and rows never line up. Header and rows
 // are built from plain divs sharing one grid template instead.
-const REP_GRID_COLS = "grid-cols-[1.6fr_1.2fr_0.8fr_0.8fr_0.8fr_1fr]";
+const REP_GRID_COLS = "grid-cols-[1.6fr_1.2fr_0.8fr_0.8fr_0.8fr_1fr] min-w-[760px]";
 
 function RepRowSkeleton() {
   return (
@@ -48,7 +48,7 @@ export default function RepresentativePerformance() {
 
   return (
     <div>
-      <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
+      <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl mb-1">
         Representative Performance
       </h1>
       <p className="text-[13px] text-[#64748B] mb-6">
@@ -72,7 +72,7 @@ export default function RepresentativePerformance() {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow overflow-x-auto">
         <div className={`grid ${REP_GRID_COLS} border-b border-[#E2E8F0] bg-[#F8FAFC]`}>
           <div className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">
             Representative

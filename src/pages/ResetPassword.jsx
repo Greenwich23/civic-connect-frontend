@@ -76,7 +76,7 @@ export default function ResetPassword() {
       <div className="w-full max-w-md">
         <Logo />
 
-        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-8 civic-shadow">
+        <div className="bg-white rounded-2xl border border-[#E2E8F0] p-5 sm:p-8 civic-shadow">
           {!token ? (
             <>
               <h1 className="font-display font-800 text-[#1E293B] text-2xl mb-1">

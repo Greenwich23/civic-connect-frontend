@@ -38,7 +38,7 @@ export default function IssueCard({ issue, onClick }) {
         />
       )}
       <div className="p-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
           <span className="text-[12px] text-[#64748B] flex items-center gap-1">
             {CATEGORY_ICONS[issue.category] || "📌"} {issue.category}
           </span>
@@ -59,14 +59,14 @@ export default function IssueCard({ issue, onClick }) {
           {issue.description}
         </p>
 
-        <div className="flex items-center justify-between text-[12px] text-[#64748B]">
-          <span>
+        <div className="flex items-center justify-between gap-2 text-[12px] text-[#64748B]">
+          <span className="min-w-0 truncate">
             📍 {issue.community?.name}
             {issue.community?.parent?.name
               ? `, ${issue.community.parent.name}`
               : ""}
           </span>
-          <span className="flex items-center gap-3">
+          <span className="flex items-center gap-3 shrink-0">
             <span>▲ {issue.supportCount ?? 0}</span>
             <span>💬 {issue.commentCount ?? 0}</span>
           </span>

@@ -118,9 +118,9 @@ export default function Notifications() {
 
   return (
     <div className="max-w-2xl mx-auto">
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
         <div>
-          <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
+          <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl mb-1">
             Notifications
           </h1>
           <p className="text-[13px] text-[#64748B]">

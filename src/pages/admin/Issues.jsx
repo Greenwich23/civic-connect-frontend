@@ -58,7 +58,7 @@ function FilterPill({ active, label, onClick }) {
 // <colSpan> row rendered as its own independent grid — the header and rows
 // need to be built from the exact same grid template, hence the row-list
 // layout below instead of a real <table>.
-const ISSUE_GRID_COLS = "grid-cols-[2fr_1.2fr_1fr_1fr_0.9fr]";
+const ISSUE_GRID_COLS = "grid-cols-[2fr_1.2fr_1fr_1fr_0.9fr] min-w-[760px]";
 
 function IssueRowSkeleton() {
   return (
@@ -98,7 +98,7 @@ export default function Issues() {
 
   return (
     <div>
-      <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
+      <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl mb-1">
         Issues
       </h1>
       <p className="text-[13px] text-[#64748B] mb-6">
@@ -169,7 +169,7 @@ export default function Issues() {
         </div>
       )}
 
-      <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow overflow-hidden">
+      <div className="bg-white rounded-2xl border border-[#E2E8F0] civic-shadow overflow-x-auto">
         <div className={`grid ${ISSUE_GRID_COLS} border-b border-[#E2E8F0] bg-[#F8FAFC]`}>
           <div className="px-4 py-3 text-[11px] font-600 text-[#94A3B8] uppercase tracking-wider">
             Issue

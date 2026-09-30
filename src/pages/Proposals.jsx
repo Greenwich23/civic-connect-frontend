@@ -22,7 +22,7 @@ function ProposalRow({ proposal }) {
         {proposal.title}
       </h3>
 
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
         <span className="text-[13px] font-600 text-[#0F766E]">
           {pct}% community support
         </span>
@@ -36,7 +36,7 @@ function ProposalRow({ proposal }) {
         />
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <button
             onClick={() => castVote.mutate("support")}
@@ -93,7 +93,7 @@ export default function CommunityProposals() {
 
   return (
     <div>
-      <h1 className="font-display font-800 text-[#1E293B] text-3xl mb-1">
+      <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl mb-1">
         Community Proposals
       </h1>
       <p className="text-[13px] text-[#64748B] mb-6">
