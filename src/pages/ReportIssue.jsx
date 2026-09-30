@@ -384,18 +384,6 @@ export default function ReportIssue() {
                 </div>
               </div>
             </div>
-
-            <input
-              value={form.locationText}
-              onChange={updateField("locationText")}
-              placeholder="Or enter a specific street or landmark..."
-              className="w-full px-3.5 py-2.5 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-[14px] text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#0F766E]/20 focus:border-[#0F766E]"
-            />
-
-            <div className="w-full h-48 bg-[#F1F5F9] rounded-xl flex flex-col items-center justify-center text-[#94A3B8]">
-              <span className="text-2xl mb-2">🗺️</span>
-              <span className="text-[13px]">Map view would appear here</span>
-            </div>
           </div>
         )}
 

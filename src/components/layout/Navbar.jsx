@@ -1,11 +1,27 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../../hooks/useAuth";
 
+const NAV_ITEMS = [
+  { to: "/#how", label: "How it works" },
+  { to: "/#features", label: "Features" },
+  { to: "/#impact", label: "Impact" },
+  { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact Us" },
+];
+
 export default function Navbar() {
+  const { pathname, hash } = useLocation();
   const { isAuthenticated, user } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const closeMenu = () => setMenuOpen(false);
+
+  // Section links (/#how) are active when that hash is in the URL on the home
+  // page; page links (/about) are active on that route and any sub-route.
+  const isActive = (to) => {
+    if (to.startsWith("/#")) return pathname === "/" && hash === to.slice(1);
+    return pathname === to || pathname.startsWith(`${to}/`);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-[#E2E8F0]">
@@ -32,31 +48,20 @@ export default function Navbar() {
           </NavLink>
         </div>
 
-        <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm text-[#64748B]">
-          <Link to="/#how" className="hover:text-[#1E293B] transition-colors">
-            How it works
-          </Link>
-          <Link
-            to="/#features"
-            className="hover:text-[#1E293B] transition-colors"
-          >
-            Features
-          </Link>
-          <Link to="/#impact" className="hover:text-[#1E293B] transition-colors">
-            Impact
-          </Link>
-          <NavLink
-            to="/about"
-            className="hover:text-[#1E293B] transition-colors"
-          >
-            About
-          </NavLink>
-          <NavLink
-            to="/contact"
-            className="hover:text-[#1E293B] transition-colors"
-          >
-            Contact Us
-          </NavLink>
+        <nav className="hidden md:flex items-center gap-4 lg:gap-6 text-sm">
+          {NAV_ITEMS.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className={`transition-colors ${
+                isActive(item.to)
+                  ? "text-[#0F766E] font-600"
+                  : "text-[#64748B] hover:text-[#1E293B]"
+              }`}
+            >
+              {item.label}
+            </Link>
+          ))}
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -123,18 +128,16 @@ export default function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <nav className="md:hidden border-t border-[#E2E8F0] bg-white px-4 py-3 flex flex-col text-sm text-[#64748B]">
-          {[
-            { to: "/#how", label: "How it works" },
-            { to: "/#features", label: "Features" },
-            { to: "/#impact", label: "Impact" },
-            { to: "/about", label: "About" },
-            { to: "/contact", label: "Contact Us" },
-          ].map((item) => (
+          {NAV_ITEMS.map((item) => (
             <Link
               key={item.to}
               to={item.to}
               onClick={closeMenu}
-              className="py-3 border-b border-[#F1F5F9] last:border-b-0 hover:text-[#1E293B]"
+              className={`py-3 border-b border-[#F1F5F9] last:border-b-0 ${
+                isActive(item.to)
+                  ? "text-[#0F766E] font-600"
+                  : "hover:text-[#1E293B]"
+              }`}
             >
               {item.label}
             </Link>

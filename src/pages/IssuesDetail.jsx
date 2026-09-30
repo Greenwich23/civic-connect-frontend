@@ -262,7 +262,7 @@ function ReportCommentModal({ isLoading, error, onSubmit, onCancel }) {
    DISCUSSION TAB
 ========================================================= */
 
-function DiscussionTab({ issueId }) {
+function DiscussionTab({ issueId, totalComments }) {
   const { user } = useAuth();
   const currentUserId = user?._id || user?.id;
 
@@ -513,7 +513,8 @@ function DiscussionTab({ issueId }) {
             <span className="text-[10px] text-[#94A3B8]">Updating...</span>
           )}
           <span className="text-[12px] text-[#64748B]">
-            {comments.length} {comments.length === 1 ? "comment" : "comments"}
+            {totalComments ?? comments.length}{" "}
+            {(totalComments ?? comments.length) === 1 ? "comment" : "comments"}
           </span>
         </div>
       </div>
@@ -1711,7 +1712,7 @@ export default function IssueDetail() {
             ))}
           </div>
 
-          {activeTab === "discussion" && <DiscussionTab issueId={issueId} />}
+          {activeTab === "discussion" && <DiscussionTab issueId={issueId} totalComments={issue.commentCount} />}
           {activeTab === "proposals" && <ProposalsTab issueId={issueId} />}
           {activeTab === "timeline" && (
             <TimelineTab statusHistory={issue.statusHistory} />
