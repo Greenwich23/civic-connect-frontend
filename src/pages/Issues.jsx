@@ -155,7 +155,7 @@ export default function Issues() {
       </div>
 
       {/* Scope tabs */}
-      <div className="flex items-center gap-2 mb-5">
+      <div className="flex items-center gap-2 mb-5 max-[600px]:flex-col">
         {SCOPES.map((s) => (
           <button
             key={s.key}

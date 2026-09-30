@@ -196,3 +196,15 @@ export function useUnpinComment(issueId) {
     },
   });
 }
+
+/*
+=========================================================
+LIKE / UNLIKE COMMENT
+=========================================================
+*/
+
+export function useToggleCommentLike() {
+  return useMutation({
+    mutationFn: (commentId) => commentApi.toggleCommentLike(commentId),
+  });
+}

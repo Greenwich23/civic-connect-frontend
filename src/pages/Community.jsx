@@ -59,7 +59,7 @@ export default function CommunityPage() {
     <div className="max-w-4xl mx-auto">
       {/* Header */}
       <div className="bg-white rounded-2xl border border-[#E2E8F0] p-6 mb-6">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between max-[600px]:flex-col max-[600px]:gap-4">
           <div>
             <h1 className="font-display font-800 text-[#1E293B] text-2xl mb-1">
               {community.name}

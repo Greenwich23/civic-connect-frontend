@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useCommunityProposals } from "../hooks/useProposals";
 import { useVoteStatus, useCastVote } from "../hooks/useVotes";
@@ -47,7 +48,8 @@ function ProposalRow({ proposal }) {
                 : "bg-[#0F766E]/10 text-[#0F766E] hover:bg-[#0F766E]/20"
             }`}
           >
-            👍 Support ({support})
+            <ThumbsUp size={14} />
+            Support ({support})
           </button>
 
           <button
@@ -59,7 +61,8 @@ function ProposalRow({ proposal }) {
                 : "bg-amber-50 text-amber-700 hover:bg-amber-100"
             }`}
           >
-            👎 Oppose ({oppose})
+            <ThumbsDown size={14} />
+            Oppose ({oppose})
           </button>
         </div>
 
