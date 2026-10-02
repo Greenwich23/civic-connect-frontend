@@ -648,9 +648,7 @@ function LikeButton({ comment }) {
       aria-pressed={state.liked}
       aria-label={state.liked ? "Unlike comment" : "Like comment"}
       className={`flex items-center gap-1.5 text-[12px] transition-colors ${
-        state.liked
-          ? "text-[#DC2626]"
-          : "text-[#64748B] hover:text-[#DC2626]"
+        state.liked ? "text-[#DC2626]" : "text-[#64748B] hover:text-[#DC2626]"
       }`}
     >
       <Heart
@@ -932,8 +930,8 @@ function CommentItem({
           an admin choosing to hide it does. */}
       {comment.moderationStatus === "flagged" && isOwner && (
         <div className="flex items-center gap-1.5 text-[11px] font-600 text-[#94A3B8] mb-2.5">
-          🚩 Someone reported this comment — an admin will review it. It's
-          still visible to others in the meantime.
+          🚩 Someone reported this comment — an admin will review it. It's still
+          visible to others in the meantime.
         </div>
       )}
 
@@ -1629,7 +1627,7 @@ export default function IssueDetail() {
         <div>
           {issue.images?.length > 0 && (
             <div className="mb-5">
-              <div className="relative w-full h-72 bg-[#F8FAFC] rounded-2xl overflow-hidden">
+              <div className="relative w-full h-150 bg-[#F8FAFC] rounded-2xl overflow-hidden">
                 <img
                   src={issue.images[activeImage]}
                   alt={`${issue.title} - image ${activeImage + 1}`}
@@ -1770,7 +1768,12 @@ export default function IssueDetail() {
             ))}
           </div>
 
-          {activeTab === "discussion" && <DiscussionTab issueId={issueId} totalComments={issue.commentCount} />}
+          {activeTab === "discussion" && (
+            <DiscussionTab
+              issueId={issueId}
+              totalComments={issue.commentCount}
+            />
+          )}
           {activeTab === "proposals" && <ProposalsTab issueId={issueId} />}
           {activeTab === "timeline" && (
             <TimelineTab statusHistory={issue.statusHistory} />
