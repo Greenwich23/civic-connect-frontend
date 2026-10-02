@@ -172,7 +172,6 @@ function CreateCommunityForm({ onClose }) {
 export default function Communities() {
   const [level, setLevel] = useState("");
   const [status, setStatus] = useState("");
-  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const filters = { level: level || undefined, status: status || undefined };
   const { data: communities, isLoading, isError } = useAdminCommunities(filters);
@@ -183,20 +182,10 @@ export default function Communities() {
         <h1 className="font-display font-800 text-[#1E293B] text-2xl sm:text-3xl">
           Communities
         </h1>
-        <button
-          onClick={() => setShowCreateForm((v) => !v)}
-          className="shrink-0 bg-[#0F766E] hover:bg-[#115E59] text-white font-600 text-[13px] px-4 py-2 rounded-lg transition-colors"
-        >
-          {showCreateForm ? "Close" : "+ Add Community"}
-        </button>
       </div>
       <p className="text-[13px] text-[#64748B] mb-6">
         {communities?.length ?? 0} communities on CivicPulse.
       </p>
-
-      {showCreateForm && (
-        <CreateCommunityForm onClose={() => setShowCreateForm(false)} />
-      )}
 
       <div className="flex flex-wrap items-center gap-2 mb-4">
         {LEVEL_FILTERS.map((f) => (

@@ -31,6 +31,9 @@ export function useCastVote(targetType, targetId) {
       if (targetType === "Proposal") {
         // Proposals are always fetched by issue — invalidate the parent issue's proposal list
         queryClient.invalidateQueries({ queryKey: ["issue"], exact: false });
+        // Proposals page lists proposals under ["proposals", "community"]
+        queryClient.invalidateQueries({ queryKey: ["proposals"] });
+        queryClient.invalidateQueries({ queryKey: ["proposal", targetId] });
       }
     },
   });
@@ -48,6 +51,12 @@ export function useRemoveVote(targetType, targetId) {
 
       if (targetType === "Issue") {
         queryClient.invalidateQueries({ queryKey: ["issue", targetId] });
+      }
+
+      if (targetType === "Proposal") {
+        queryClient.invalidateQueries({ queryKey: ["issue"], exact: false });
+        queryClient.invalidateQueries({ queryKey: ["proposals"] });
+        queryClient.invalidateQueries({ queryKey: ["proposal", targetId] });
       }
     },
   });
